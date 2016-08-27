@@ -1,0 +1,85 @@
+<!--
+  #%L
+  ARROWHEAD::WP5::Market Manager
+  %%
+  Copyright (C) 2016 The ARROWHEAD Consortium
+  %%
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  #L%
+  -->
+<h2>Clearing</h2>
+
+<button type="submit" class="btn btn-success"
+	ng-click="clear()">
+	<span class="glyphicon glyphicon-check"></span>Clear!
+</button>
+
+<div class="container-fluid">
+	<div class="row">
+	<div class="col-md-6">
+		<h2>Up Bids</h2>
+		  
+		    <nvd3-line-chart
+		    	data="upBids"
+		        id="exampleId"
+		        xAxisTickFormat="xAxisTickFormatFunction()"
+		        yAxisTickFormat="yAxisTickFormatFunction()"
+				forcex=[0]
+				forcey=[0]
+				margin="{left:80,top:50,bottom:50,right:10}"
+				showLegend="true"
+		        interpolate="step-before"
+		        width="500"
+		        height="500"
+		        objectEquality="true"
+		        showXAxis="true"
+		        showYAxis="true"
+		        color="colorFunction()"
+		        legendColor="colorFunction()"
+		        yAxisLabel="Price DKK/kWh"
+		        xAxisLabel="Quantity Wh">
+		        	<svg></svg>
+		    </nvd3-line-chart>
+		    </div>
+	    <div class="col-md-6">
+		<h2>Down Bids</h2>
+		    <nvd3-line-chart
+		    	data="downBids"
+		        id="exampleI2"
+		        xAxisTickFormat="xAxisTickFormatFunction()"
+		        yAxisTickFormat="yAxisTickFormatFunction()"
+				forcex=[0]
+				forcey=[0]
+				margin="{left:80,top:50,bottom:50,right:10}"
+				showLegend="true"
+		        interpolate="step-before"
+		        width="500"
+		        height="500"
+		        objectEquality="true"
+		        showXAxis="true"
+		        showYAxis="true"
+		        color="colorFunction()"
+		        legendColor="colorFunction()"
+		        yAxisLabel="Price DKK/kWh"
+		        xAxisLabel="Quantity Wh">
+		        	<svg></svg>
+		    </nvd3-line-chart>
+		    </div>
+	</div>
+</div>

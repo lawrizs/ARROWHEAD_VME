@@ -1,0 +1,90 @@
+<!--
+  #%L
+  ARROWHEAD::WP5::Aggregator Manager
+  %%
+  Copyright (C) 2016 The ARROWHEAD Consortium
+  %%
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  #L%
+  -->
+<h2>Aggregator {{id.value === null ? "" : (id.value)}}</h2>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table table-striped table-bordered">
+				<tr>
+					<td>Total number of simple flex-offers:</td>
+					<td>{{stats.numSimpleFOs}}</td>
+				</tr>
+				<tr>
+					<td>Total number of aggregated flex-offers:</td>
+					<td>{{stats.numAggFOs}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="col-md-6">
+			<table class="table table-striped table-bordered">
+				<tr>
+					<td>Initiated flex-offers: {{stats.numInitial}}</td>
+					<td>Offered flex-offers: {{stats.numOffered}}</td>
+				</tr>
+				<tr>
+					<td>Accepted flex-offers: {{stats.numAccepted}}</td>
+					<td>Rejected flex-offers: {{stats.numRejected}}</td>
+				</tr>
+				<tr>
+					<td>Assigned flex-offers: {{stats.numAssigned}}</td>
+					<td>Executed flex-offers: {{stats.numExecuted}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="row">
+			<div class="col-md-4" ng-controller="MainCtrl_XmppParams">
+				<json-editor schema="xmppParamsSchema" startval="xmppParams"
+					iconlib="bootstrap3" theme="bootstrap3"
+					buttons-controller="MainCtrl_XmppParams">
+				<button type="submit" class="btn btn-success"
+					ng-click="onXmppParamsSave($event)" ng-disabled="!isValid">
+					<span class="glyphicon glyphicon-check"></span>Save XMPP Parameters
+				</button>
+			</div>
+			<div class="col-md-4" ng-controller="MainCtrl_AggParams">
+				<json-editor schema="aggParamsSchema" startval="aggParams"
+					iconlib="bootstrap3" theme="bootstrap3"
+					buttons-controller="MainCtrl_AggParams">
+				<button type="submit" class="btn btn-success"
+					ng-click="onAggParamsSave($event)" ng-disabled="!isValid">
+					<span class="glyphicon glyphicon-check"></span>Save Aggregation
+					Parameters
+				</button>
+				</json-editor>
+			</div>
+			<div class="col-md-4" ng-controller="MainCtrl_AnalyticsParams">
+				<json-editor schema="analyticsParamsSchema" startval="analyticsParams"
+					iconlib="bootstrap3" theme="bootstrap3"
+					buttons-controller="MainCtrl_AnalyticsParams">
+				<button type="submit" class="btn btn-success"
+					ng-click="onAnalyticsParamsSave($event)" ng-disabled="!isValid">
+					<span class="glyphicon glyphicon-check"></span>Save Analytics Settings
+				</button>
+				</json-editor>
+			</div>			
+		</div>
+	</div>

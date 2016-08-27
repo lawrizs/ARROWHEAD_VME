@@ -1,0 +1,187 @@
+/*-
+ * #%L
+ * ARROWHEAD::WP5::Aggregator Manager
+ * %%
+ * Copyright (C) 2016 The ARROWHEAD Consortium
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+.browsehappy {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+body {
+  padding: 0;
+}
+
+/* Everything but the jumbotron gets side spacing for mobile first views */
+.header,
+.marketing,
+.footer {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Custom page header */
+.header {
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 10px;
+}
+/* Make the masthead heading the same height as the navigation */
+.header h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+  padding-bottom: 19px;
+}
+
+/* Custom page footer */
+.footer {
+  padding-top: 19px;
+  color: #777;
+  /* border-top: 1px solid #e5e5e5; */
+}
+
+.container-narrow > hr {
+  margin: 30px 0;
+}
+
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+
+/* Supporting marketing content */
+.marketing {
+  margin: 40px 0;
+}
+.marketing p + h4 {
+  margin-top: 28px;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  .container {
+    max-width: 730px;
+  }
+
+  /* Remove the padding we set earlier */
+  .header,
+  .marketing,
+  .footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 30px;
+  }
+  /* Remove the bottom border on the jumbotron for visual effect */
+  .jumbotron {
+    border-bottom: 0;
+  }
+}
+
+.terminalframe {
+	padding-left: 3px;
+	padding-right: 3px;	
+	border-style: solid;
+    border-width: 1px;
+    border-radius: 10;
+}
+
+rect.foTimeFlexibility {
+	fill: #64BE45;
+	stroke: black;
+	opacity: 0.5;
+}
+
+line.foTimeFlexibility {
+	stroke: #64BE45;
+	stroke-width:0.75;
+}
+
+line.foCostFunction {
+	stroke: #FF0000;
+	stroke-width:0.75;
+}
+
+text.foTimeFlexibility {
+	fill: #64BE45;
+}
+
+.foTaxis .tick line {
+ 	stroke: blue;
+    opacity: 1;
+}
+
+.foXaxis .tick line {
+ 	stroke: lightgrey;
+    opacity: 0.7;
+}
+
+.foY0line {
+	stroke: black;
+	stroke-width:1;
+}
+
+.foYaxis .tick line {
+	stroke: lightgrey;
+    opacity: 0.7;
+}
+
+.foAreaFlex {
+	fill: #64BE45;
+	stroke-width:0.75;
+	stroke:rgb(0,0,0);
+}
+
+.foAreaBase {
+	fill: #BEBEBE;
+	stroke-width:0.5;
+	stroke:#101010	
+}
+
+.foSchedule {
+	fill: red;
+}
+
+line.foSchedule {
+	stroke: red;
+	stroke-width: 3;
+}
+
+
+.foDefSchedule {
+	fill: orange;
+} 
+
+line.foDefSchedule {
+	stroke: orange;
+	stroke-width: 2;
+}

@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.arrowhead.wp5</groupId>
+		<artifactId>vmeroot</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<name>ARROWHEAD::WP5::Market Manager</name>
+	<artifactId>market-manager</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>org.arrowhead.wp5</groupId>
+			<artifactId>application-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.arrowhead.wp5</groupId>
+			<artifactId>market-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.arrowhead.wp5</groupId>
+			<artifactId>communication-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.arrowhead.wp5</groupId>
+			<artifactId>communication-xmpp</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-grizzly2-servlet</artifactId>
+			<version>2.18</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-moxy</artifactId>
+			<version>2.18</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.grizzly</groupId>
+			<artifactId>grizzly-websockets</artifactId>
+			<version>2.3.14</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jhades</groupId>
+			<artifactId>jhades</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+			  <artifactId>maven-clean-plugin</artifactId>
+			  <version>2.6.1</version>
+			  <configuration>
+			    <filesets>
+			      <fileset>
+			        <directory>src/main/resources/app/bower_components</directory>
+			      </fileset>
+			      <fileset>
+			        <directory>src/main/resources/node_modules</directory>
+			      </fileset>
+			      <fileset>
+			        <directory>src/main/resources/node</directory>
+			      </fileset>
+			    </filesets>
+			  </configuration>
+			 </plugin>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.0</version>
+
+				<configuration>
+					<workingDirectory>src/main/resources</workingDirectory>
+				</configuration>
+
+				<executions>
+
+					<execution>
+						<id>install node and npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v4.5.0</nodeVersion>
+							<npmVersion>2.15.9</npmVersion>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<!-- Optional configuration which provides for running any npm command -->
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

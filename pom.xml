@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.arrowhead.wp5</groupId>
+	<artifactId>vmeroot</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>ARROWHEAD::WP5::VME Root Project</name>
+	<description>The root of the ARROWHEAD WP5 VME project</description>
+	<organization>
+		<name>The ARROWHEAD Consortium</name>
+		<url>http://www.arrowhead.eu/</url>
+	</organization>
+	<url>http://www.arrowhead.eu/</url>
+	<inceptionYear>2016</inceptionYear>
+
+	<mailingLists>
+		<mailingList>
+			<post>arrowhead-wp_5@forge.soa4d.org</post>
+		</mailingList>
+	</mailingLists>
+		
+	<licenses>
+		<license>
+			<name>MIT License</name>	
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<distribution>repo</distribution>
+		</license>
+		<!-- 
+		<license>
+			<name>ARROWHEAD Consortium Agreement</name>
+		</license>  -->
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+		<slf4j.version>1.7.12</slf4j.version>
+	</properties>
+	
+	<build>
+	<pluginManagement>
+	<plugins>	
+      	<plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.9</version>
+        <configuration>
+          <verbose>false</verbose>
+          <addSvnKeyWords>false</addSvnKeyWords>
+          <licenseName>mit</licenseName>
+          <roots>
+                <root>src/main/java</root>
+                <root>src/main/resources</root>
+                <root>src/test</root>
+          </roots>
+	  <excludes>
+                <exclude>*.json</exclude>
+                <exclude>*.properties</exclude>
+          </excludes>
+
+        </configuration>
+        <executions>
+          <execution>
+            <id>first</id>
+            <goals>
+              <goal>update-file-header</goal>
+            </goals>
+            <phase>process-sources</phase>        
+          </execution>
+        </executions>
+ 	</plugin>
+	</plugins>
+	</pluginManagement>
+	</build>
+
+	<modules>
+		<!-- ARROWHEAD WP5 core specification -->
+		<module>core-api</module>
+
+		<!-- Demonstrator1 managers -->
+		<module>aggregator-manager</module>
+		<module>flexoffer-manager</module>
+
+		<!-- Implementations of communication functionality -->
+		<module>communication-common</module>
+		<module>communication-xmpp</module>
+
+    <module>application-common</module>
+ 
+    <module>aggregator-core</module>
+
+<!--     
+    <module>DemoEndToEndTest</module>
+    <module>arrowhead-subsystem</module>
+    <module>arrowhead-flexoffer-manager</module>
+    <module>arrowhead-aggregator-manager</module>
+    <module>DemoFOAapp</module>  -->
+    <module>flexoffer-tutorial</module>
+
+    <module>market-core</module>
+    <module>market-manager</module>
+    <module>arrowhead-common</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>	
+	</dependencies>
+
+</project>

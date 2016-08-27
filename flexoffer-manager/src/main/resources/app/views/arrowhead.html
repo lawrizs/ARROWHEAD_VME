@@ -1,0 +1,77 @@
+<!--
+  #%L
+  ARROWHEAD::WP5::FlexOffer Manager
+  %%
+  Copyright (C) 2016 The ARROWHEAD Consortium
+  %%
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  #L%
+  -->
+<tabset>
+ 	<tab heading="FlexOfferAggregator Producers" ng-controller="ArrowheadCtrl as arrowhead">
+	<br /><input type="button" class="btn btn-success" ng-click="arrowhead.getServiceProducers()" value="Get FlexOfferAggregator Producers"/><br />
+	Producers Count: {{producersList.length}}<br />
+ 		<table class="table table-striped">
+		  <thead>
+		  <tr>
+		    <th>Producer Name</th>
+		    <th>Producer JabberID</th>
+			<th>Producer Endpoint</th>
+		    <th>Service Type</th>
+			<th>XMPP Server</th>
+			<th>XMPP Port</th>
+		  </tr></thead>
+		  <tbody>
+			  <tr ng-repeat="producer in producersList">
+				<td>{{ producer.name }}</td>
+			    <td>{{ producer.jabberId }}</td>
+			    <td>{{ producer.endpoint }}</td>
+			    <td>{{ producer.serviceType }}</td>
+			    <td>{{ producer.xmppServer }}</td>
+			    <td>{{ producer.xmppPort }}</td>
+			  </tr>
+			</tbody>
+		</table>
+ 	</tab>
+	<tab heading="Local FlexOfferAgent Producers" ng-controller="ArrowheadCtrl as arrowhead">
+	<br /><input type="button" class="btn btn-success" ng-click="arrowhead.getLocalServiceProducers()" value="Get Local FlexOfferAgent Producers"/><br />
+	Local Producers Count: {{localProducersList.length}}<br />
+ 		<table class="table table-striped">
+		  <thead>
+		  <tr>
+		    <th>Producer Name</th>
+		    <th>Producer JabberID</th>
+			<th>Producer Endpoint</th>
+		    <th>Service Type</th>
+			<th>XMPP Server</th>
+			<th>XMPP Port</th>
+		  </tr></thead>
+		  <tbody>
+			  <tr ng-repeat="localProducer in localProducersList">
+				<td>{{ localProducer.name }}</td>
+			    <td>{{ localProducer.jabberId }}</td>
+			    <td>{{ localProducer.endpoint }}</td>
+			    <td>{{ localProducer.serviceType }}</td>
+			    <td>{{ localProducer.xmppServer }}</td>
+			    <td>{{ localProducer.xmppPort }}</td>
+			  </tr>
+			</tbody>
+		</table>
+ 	</tab>	
+</tabset>	

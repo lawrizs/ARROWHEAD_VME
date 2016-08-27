@@ -1,0 +1,78 @@
+<!--
+  #%L
+  ARROWHEAD::WP5::FlexOffer Manager
+  %%
+  Copyright (C) 2016 The ARROWHEAD Consortium
+  %%
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  #L%
+  -->
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-8">
+			<table class="table table-striped table-bordered">
+  				  <tr>
+				    <td>Total number of generated flex-offers: {{stats.numGeneratedFOs}}</td>
+				    <td>Number of flex-offers sent to Aggregator: {{stats.numSendFlexOffers}}</td>
+				  </tr>
+				  <tr>
+				    <td>Initiated flex-offers: {{stats.numInitial}}</td>
+				    <td>Offered flex-offers: {{stats.numOffered}}</td>
+				  </tr>
+			  	  <tr>
+				    <td>Accepted flex-offers: {{stats.numAccepted}}</td>
+				    <td>Rejected flex-offers: {{stats.numRejected}}</td>
+				  </tr>
+			  	  <tr>
+				    <td>Assigned flex-offers: {{stats.numAssigned}}</td>
+				    <td>Executed flex-offers: {{stats.numExecuted}}</td>
+				  </tr>				  				  				  
+			</table>
+		</div>		
+		<div class="col-md-4">
+			Use Aggregator:
+		    <div class="btn-group">
+		        <label class="btn btn-success" ng-model="mode.value" btn-radio="'fmOnlineActive'">Yes</label>
+		        <label class="btn btn-warning" ng-model="mode.value" btn-radio="'fmOfflinePassive'">No</label>
+		    </div>		    
+
+				<form role="form">
+					<div class="form-group">
+						<label>Aggregator XMPP server: </label> <input type="text" class="form-control" ng-model="connectionDetails.xmppServer" />					
+					</div>
+					<div class="form-group">
+						<label>Aggregator Resource: </label> <input type="text"
+							class="form-control" ng-model="connectionDetails.resource" />
+					</div>
+					<div class="form-group">
+						<label>User name: </label> <input type="text" class="form-control"
+							ng-model="connectionDetails.username" />
+					</div>
+					<div class="form-group">
+						<label>Password: </label> <input type="password"
+							class="form-control" ng-model="connectionDetails.password" />
+					</div>
+					<div class="form-group">
+						<input type="submit" class="btn btn-default" ng-click="saveConnectionData();" value="Save"/>
+					</div>
+				</form>			
+		</div>
+	</div>
+</div>
+

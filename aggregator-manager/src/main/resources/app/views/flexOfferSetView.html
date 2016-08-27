@@ -1,0 +1,109 @@
+<!--
+  #%L
+  ARROWHEAD::WP5::Aggregator Manager
+  %%
+  Copyright (C) 2016 The ARROWHEAD Consortium
+  %%
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  #L%
+  -->
+  <script type="text/ng-template" id="foModalView.html">        
+        <div class="modal-body">
+           <div ng-show="viewType == 'gui'" data-ng-bar flexoffer="flexOffer"></div>
+		   <div ng-show="viewType == 'json'">
+				<pre>{{ flexOfferJSON }}</pre>
+			</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="close()">Close</button>
+        </div>
+  </script>
+
+<div>
+	<div style="float: right;">
+		View As: <select data-ng-model="viewMode">
+			<option value="0">Graph</option>
+			<option value="1">Table</option>
+			<option value="2">Cost functions</option>
+		</select>
+	</div>
+</div>
+
+<div ng-show="viewMode == 0">
+	<label>Synchronize Time Axis</label> <input type='checkbox'
+		name='checkbox' ng-model='syncTA' /> <label>Amount Axis</label> <input
+		type='checkbox' name='checkbox' ng-model='syncEA' />
+	<div ng-repeat='f in flexoffers track by $index'>
+		<div data-ng-bar flexoffer='flexoffers[$index]' timerange='timeRange'
+			energyrange='energyRange'></div>
+	</div>
+</div>
+
+<div ng-show="viewMode == 1">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th></th>
+				<th>FlexOffer Id</th>
+				<th>State</th>
+				<th>Creation</th>
+				<th>Accept Before</th>
+				<th>Assign Before</th>
+				<th>Start After</th>
+				<th>Start Before</th>
+				<th>Will Start</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="f in flexoffers">
+				<td>
+					<button class="btn" ng-click="showFO('lg', f, 'gui')">
+						<span class="glyphicon glyphicon-asterisk"></span>&nbsp;&nbsp;Show
+					</button>
+					<button class="btn" ng-click="showFO('lg', f, 'json')">
+						<span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Show
+						JSON
+					</button></td>
+				<td>{{ f.id }}</td>
+				<td>{{ f.state }}</td>
+				<td>{{ dateDiff(f.creationTime, f.startAfterTime) }} min.</td>
+				<td>{{ dateDiff(f.acceptanceBeforeTime, f.startAfterTime) }}
+					min.</td>
+				<td>{{ dateDiff(f.assignmentBeforeTime, f.startAfterTime) }}
+					min.</td>
+				<td>{{ toDate(f.startAfterTime).toLocaleString() }}</td>
+				<td>+{{ dateDiff(f.startBeforeTime, f.startAfterTime) }} min.</td>
+				<td ng-if="f.flexOfferSchedule == null"><span
+					class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+					Not yet assigned!</td>
+				<td ng-if="f.flexOfferSchedule !== null"><font color="red">
+						<b> +{{ dateDiff(f.flexOfferSchedule.startTime,
+							f.startAfterTime) }} min. </b>
+				</font></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div ng-show="viewMode == 2">	
+	<label>Synchronize Time Axis</label> <input type='checkbox' name='checkbox' ng-model='syncTA' /> 
+	<div ng-repeat='f in flexoffers track by $index'>
+		<div data-ng-cost-bar flexoffer='flexoffers[$index]' timerange='timeRange' energyrange='energyRange'></div>
+	</div>
+</div>

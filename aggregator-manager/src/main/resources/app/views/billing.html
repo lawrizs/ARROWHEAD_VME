@@ -1,0 +1,118 @@
+<!--
+  #%L
+  ARROWHEAD::WP5::Aggregator Manager
+  %%
+  Copyright (C) 2016 The ARROWHEAD Consortium
+  %%
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  #L%
+  -->
+  <script type="text/ng-template" id="billModalTemplate.html">        
+        <div class="modal-body">
+			<p>
+				<b>Customer:</b> {{bill.customerId}}
+			</p>
+         	<table class="table table-striped table-bordered">				
+				<tr>
+					<th>Item</th>
+					<th>Value</th>
+					<th>Price</th>					
+				</tr>
+				<tr>
+					<td>Number of flexoffers</td>
+					<td>{{bill.numFlexOffers}}</td>
+				</tr>
+				<tr>
+					<td>Fixed reward for all flexoffers</td>
+					<td></td>
+					<td>{{bill.rewardFixed | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>Total Time Flexibility</td>
+					<td>{{bill.totalTimeFlex}} time units (15 min)</td>
+					<td>{{bill.rewardTotalTimeFlex | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>Total Energy Flexibility</td>
+					<td>{{bill.totalEnergyFlex | number : 2 }} kWh</td>
+					<td>{{bill.rewardTotalEnergyFlex | currency:""}} DKK</td>
+				</tr>
+
+				<tr>
+					<td>Number of default schedule deviations</td>
+					<td>{{bill.numCustomScheduleActivations}}</td>
+					<td>{{bill.rewardTotalSchedFixed | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>The sum of stat time scheduling deviations with respect to the default schedule</td>
+					<td>{{bill.totalStartTimeDeviations}} time units (15 min)</td>
+					<td>{{bill.rewardTotalSchedEST | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>The sum of energy deviations with respect to the default schedule</td>
+					<td>{{bill.totalEnergyDeviations | number : 2}} kWh</td>
+					<td>{{bill.rewardTotalSchedEnergy | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>Total Reward</td>
+					<td></td>
+					<td>{{bill.rewardTotal | currency:""}} DKK</td>
+				</tr>
+			</table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="close()">Close</button>
+        </div>
+  </script>
+
+
+<tabset> 
+    <tab heading="Default Contract">
+		<h2>Contract applicable to all Aggregator customers (DER owners)</h2>	
+		<div class="col-md-12" ng-controller="BillingCtrl_DefContract">
+			<json-editor schema="defaultContractSchema" startval="defaultContract"
+						 buttons-controller="BillingCtrl_DefContract"/>
+			<button type="submit" class="btn btn-success"
+						ng-click="onDefaultContractSave($event)" ng-disabled="!isValid">
+						<span class="glyphicon glyphicon-check"></span>Update Default Contract
+			</button>					 
+		</div>
+	</tab>
+	
+	<tab heading="All Active Customers">
+		<table class="table table-striped table-bordered">
+				<tr>
+					<td>Customer Id</td>
+					<td>Number of flexOffers</td>
+					<td>Total Reward for Flexibility</td>
+					<td></td>
+				</tr>
+				<tr ng-repeat='c in customers'>
+					<td>{{c.customerId}}</td>
+					<td>{{c.numFlexOffers}}</td>
+					<td>{{c.totalRewardForFlexibility | currency:""}} DKK</td>
+					<td>
+						<a href ng-click="showBill(c.customerId);">Show a bill for this customer</a>						
+					</td>
+				</tr>
+			</table>
+	</tab>
+	
+</tabset>
+
