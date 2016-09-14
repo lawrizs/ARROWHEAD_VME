@@ -68,22 +68,23 @@
 		</resources>
 		<plugins>
 			<plugin>
-			  <artifactId>maven-clean-plugin</artifactId>
-			  <version>2.6.1</version>
-			  <configuration>
-			    <filesets>
-			      <fileset>
-			        <directory>src/main/resources/app/bower_components</directory>
-			      </fileset>
-			      <fileset>
-			        <directory>src/main/resources/node_modules</directory>
-			      </fileset>
-			      <fileset>
-			        <directory>src/main/resources/node</directory>
-			      </fileset>
-			    </filesets>
-			  </configuration>
-			 </plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>src/main/resources/app/bower_components</directory>
+						</fileset>
+						<fileset>
+							<directory>src/main/resources/node_modules</directory>
+						</fileset>
+						<fileset>
+							<directory>src/main/resources/node</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
@@ -92,33 +93,13 @@
 				<configuration>
 					<workingDirectory>src/main/resources</workingDirectory>
 				</configuration>
-
-				<executions>
-
-					<execution>
-						<id>install node and npm</id>
-						<goals>
-							<goal>install-node-and-npm</goal>
-						</goals>
-						<configuration>
-							<nodeVersion>v4.5.0</nodeVersion>
-							<npmVersion>2.15.9</npmVersion>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>npm install</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<!-- Optional configuration which provides for running any npm command -->
-						<configuration>
-							<arguments>install</arguments>
-						</configuration>
-					</execution>
-
-				</executions>
-			</plugin>
+				<executions> <execution> <id>install node and npm</id> <goals> <goal>install-node-and-npm</goal> 
+					</goals> <configuration> <nodeVersion>v4.5.0</nodeVersion> <npmVersion>2.15.9</npmVersion> 
+					</configuration> </execution> <execution> <id>npm install</id> <goals> <goal>npm</goal> 
+					</goals> <!- - Optional configuration which provides for running any npm 
+					command - -> <configuration> <arguments>install</arguments> </configuration> 
+					</execution> </executions>
+			</plugin> -->
 		</plugins>
 	</build>
 </project>
