@@ -93,6 +93,9 @@
  
     <module>aggregator-core</module>
 
+    <!-- Aggregator Test Tool -->
+    <module>aggregator-testtool</module>
+
 <!--     
     <module>DemoEndToEndTest</module>
     <module>arrowhead-subsystem</module>
