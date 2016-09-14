@@ -116,7 +116,8 @@
 			    </filesets>
 			  </configuration>
 			 </plugin>
-			 <plugin>
+			 <!--
+s			 <plugin>
 		     		<groupId>com.github.eirslett</groupId>
 		       	 	<artifactId>frontend-maven-plugin</artifactId>		        	
 		        	<version>1.0</version>
@@ -143,13 +144,13 @@
 							<goals>
 								<goal>npm</goal>
 							</goals>
-							<!-- Optional configuration which provides for running any npm command -->
+							<!- - Optional configuration which provides for running any npm command - ->
 							<configuration>
 								<arguments>install</arguments>
 							</configuration>
 						</execution>
 
-<!--						 <execution>
+<!- -						 <execution>
 				                        <id>bower install</id>
 				                        <goals>
 				                            <goal>bower</goal>
@@ -157,9 +158,9 @@
 				                        <configuration>
 				                            <arguments>install</arguments>
 				                        </configuration>
-						</execution> -->
+						</execution> - ->
 				</executions>
-	         </plugin>			 
+	         </plugin>-->
 		</plugins>
 		<resources>
 			<resource>

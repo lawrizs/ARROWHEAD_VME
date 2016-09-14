@@ -21,13 +21,13 @@ public class FlexOfferResource {
     private static final Logger logger = LoggerFactory.getLogger(FlexOfferResource.class);
 
     AggregatorTestTool att;
-    
+
     public FlexOfferResource(AggregatorTestTool att) {
         this.att = att;
     }
-    
-    public FlexOfferResource(){
-        
+
+    public FlexOfferResource() {
+
     }
 
 //    @GET
@@ -42,13 +42,13 @@ public class FlexOfferResource {
     public Response createFlexOffer(@PathParam("foaid") String foaId, FlexOffer flexOffer)
             throws FlexOfferException {
         logger.debug("Creating flex-offer");
-        
+
         if (!foaId.equals(flexOffer.getOfferedById())) {
             throw new WebApplicationException(Response.status(Status.BAD_REQUEST)
                     .entity("IDs do not match!").type(MediaType.TEXT_PLAIN)
                     .build());
         }
-        
+
         this.att.addToHttpClients(foaId);
         try {
             this.att.createFlexOffer(foaId, flexOffer);
@@ -57,7 +57,7 @@ public class FlexOfferResource {
                     .entity(e.getMessage()).type(MediaType.TEXT_PLAIN)
                     .build());
         }
-        
+
         return Response.ok().build();
     }
 
@@ -66,7 +66,7 @@ public class FlexOfferResource {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public FlexOffer getFlexOffer(@PathParam("foaid") String ownId, @PathParam("foid") String id) throws FlexOfferException {
         logger.debug("Fetching flex-offer");
-        
+
         FlexOffer fo = this.att.getFlexOffer(ownId, Integer.parseInt(id));
         if (fo == null) {
             throw new WebApplicationException(Response.status(Status.NOT_FOUND)
@@ -76,5 +76,5 @@ public class FlexOfferResource {
 
         return fo;
     }
-    
+
 }
