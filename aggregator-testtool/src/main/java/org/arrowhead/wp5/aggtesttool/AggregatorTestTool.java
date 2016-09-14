@@ -1,14 +1,11 @@
 package org.arrowhead.wp5.aggtesttool;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Timer;
 
 import javax.ws.rs.core.UriBuilder;
@@ -23,6 +20,7 @@ import org.arrowhead.wp5.core.entities.FlexOfferException;
 import org.arrowhead.wp5.core.entities.FlexOfferSchedule;
 import org.arrowhead.wp5.core.entities.FlexOfferState;
 import org.arrowhead.wp5.core.services.AggServiceManager;
+import org.arrowhead.wp5.core.util.FOConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
@@ -39,14 +37,17 @@ import se.bnearit.arrowhead.common.core.service.discovery.exception.ServiceRegis
 public class AggregatorTestTool {
 
     private static final Logger logger = LoggerFactory.getLogger(AggregatorTestTool.class);
-    private Properties properties = new Properties();
+    private static final String PROPERTY_FILE_KEY = "foagg.configfile";
+    private static final String PROPERTY_FILE_DEFAULT = "aggregator-testtool.properties";
 
     private final String id;
     private String password;
     private final String xmppHostname;
+    private final String xmppService;
     private final String xmppResource;
     private final int xmppPort;
-    
+    private final String xmppCertificate;
+
     private final boolean ARROWHEAD_COMPLIANT;
 
     private XMPPTCPConnectionConfiguration config;
@@ -55,7 +56,7 @@ public class AggregatorTestTool {
     private XFlexOfferProviderClient xFOProvider;
 
     private Map<String, Map<Integer, FlexOffer>> flexOffers;
-    
+
     /* Local HTTP server */
     private final String BASE_URI_ADDRESS;
     private HttpServer server;
@@ -64,51 +65,33 @@ public class AggregatorTestTool {
     private final String httpPath;
 
     private ResourceConfig resourceConfig;
-    
+
     private HashSet<String> httpClients = new HashSet<String>();
+
+    private final URI BASE_URI;
 
     // Loading defaults
     {
-        loadProperties();
-        
-        BASE_URI_ADDRESS = properties.getProperty("foagg.base-uri-address", "http://0.0.0.0/").trim();
-        int port = 9998;
-        try {
-            port = Integer.parseInt(properties.getProperty("foagg.serverPort", Integer.toString(port)));
-        } catch (NumberFormatException e) {
-        }
-        serverPort = port;
-        httpHostname = properties.getProperty("foagg.http-hostname", "localhost").trim();
-        httpPath = properties.getProperty("foagg.http-path", "api").trim();
-        id = properties.getProperty("foagg.id", "wrong").trim();
-        password = properties.getProperty("foagg.password", "XXXXX").trim();
-        ARROWHEAD_COMPLIANT = Boolean.parseBoolean(properties.getProperty("foagg.arrowhead-compliant", "false"));
-        xmppHostname = properties.getProperty("foagg.xmpp-server", "XXXXX.dpt.cs.aau.dk").trim();
-        xmppResource = properties.getProperty("foagg.xmpp-resource", "demo").trim();
-        port = 5222;
-        try {
-            port = Integer.parseInt(properties.getProperty("fom.xmpp-port", Integer.toString(port)));
-        } catch (NumberFormatException e) {
-        }
-        xmppPort = port;
-    }
-    
-    private final URI BASE_URI = UriBuilder.fromUri(BASE_URI_ADDRESS)
-            .port(serverPort).path(httpPath).build();
+        // @formatter:off
+        FOConfig config = new FOConfig(PROPERTY_FILE_KEY, PROPERTY_FILE_DEFAULT);
 
-    private void loadProperties() {
-        String filename = System.getProperty("foagg.configfile", "aggregator-testtool.properties");
-        try {
-            Properties props = new Properties();
-            props.load(new FileInputStream(filename));
-            properties = props;
-        } catch (FileNotFoundException e) {
-            logger.info("Unable to locate configuration file, using defaults.");
-        } catch (IOException e) {
-            logger.error("Failed to read property file {}.", filename, e);
-        }
+        BASE_URI_ADDRESS =    config.getString( "foagg.base-uri-address",    "http://0.0.0.0/");
+        serverPort =          config.getInt(    "foagg.serverPort",          9998);
+        httpHostname =        config.getString( "foagg.http-hostname",       "localhost");
+        httpPath =            config.getString( "foagg.http-path",           "api");
+        id =                  config.getString( "foagg.id",                  "");
+        password =            config.getString( "foagg.password",            "");
+        ARROWHEAD_COMPLIANT = config.getBoolean("foagg.arrowhead-compliant", "false");
+        xmppHostname =        config.getString( "foagg.xmpp-server",         "");
+        xmppService =         config.getString( "foagg.xmpp-service",        "");
+        xmppResource =        config.getString( "foagg.xmpp-resource",       "");
+        xmppPort =            config.getInt(    "foagg.xmpp-port",           5222);
+        xmppCertificate =     config.getString( "foagg.xmpp-certificate",    "");
+
+        BASE_URI = UriBuilder.fromUri(BASE_URI_ADDRESS).port(serverPort).path(httpPath).build();
+        // @formatter:on
     }
-    
+
     public static void main(String[] args) {
         new AggregatorTestTool();
         while (true) {
@@ -165,7 +148,7 @@ public class AggregatorTestTool {
             e.printStackTrace();
         }
     }
-    
+
     private void initHttpServer() throws IOException {
         /* Initialize the local HTTP server */
         this.resourceConfig = new ResourceConfig();
@@ -173,15 +156,13 @@ public class AggregatorTestTool {
         // LoggingFilter(Logger.getLogger(FlexOfferManager.class.getName()),
         // true));
         this.resourceConfig
-                        .register(org.arrowhead.wp5.com.filter.CORSFilter.class);
+                .register(org.arrowhead.wp5.com.filter.CORSFilter.class);
         /* Register instances */
         this.resourceConfig.registerInstances(new FlexOfferResource(this));
         // Manually register the JSON feature
         this.resourceConfig.register(MoxyJsonFeature.class);
         this.server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI,
                 resourceConfig, false);
-        
-        
 
         this.server.start();
     }
@@ -190,15 +171,14 @@ public class AggregatorTestTool {
         /* Initializes XMPP connection */
         //          new JHades().overlappingJarsReport();
 
-        System.setProperty("javax.net.ssl.trustStore",
-                "resources/clientstore.jks");
+        System.setProperty("javax.net.ssl.trustStore", xmppCertificate);
         config = XMPPTCPConnectionConfiguration
                 .builder()
                 .setUsernameAndPassword(id, password)
-                .setServiceName("XXXXX")
+                .setServiceName(xmppService)
                 .setHost(xmppHostname)
                 .setResource(xmppResource)
-                .setKeystorePath("resources/clientstore.jks")
+                .setKeystorePath(xmppCertificate)
                 .setSecurityMode(SecurityMode.required)
                 .setCompressionEnabled(false)
                 .build();
@@ -233,14 +213,14 @@ public class AggregatorTestTool {
             ds.setEnergyAmounts(amounts);
             flexOffer.setDefaultSchedule(ds);
         }
-        
+
         if (flexOffer.getFlexOfferSchedule() != null && flexOffer.getFlexOfferSchedule().getEnergyAmounts() == null) {
             logger.warn("getFlexOfferSchedule is not null, but has no energy amounts!");
             FlexOfferState s = flexOffer.getState();
             flexOffer.setFlexOfferSchedule(null);
             flexOffer.setState(s);
         }
-        
+
         if (!ownerId.equals(flexOffer.getOfferedById())) {
             throw new FlexOfferException("ownerId and offeredBy are not equal!");
         }
@@ -284,11 +264,11 @@ public class AggregatorTestTool {
 //            throw new FlexOfferException("FlexOffer already added! Can not overwrite FlexOffer!");
 //        }
         current.put(flexOffer.getId(), flexOffer);
-        
+
         Timer timer = new Timer();
-        
+
         timer.schedule(new ScheduleTask(flexOffer) {
-            
+
             @Override
             public void run() {
                 double[] amounts = new double[flexOffer.getSlices().length];
@@ -296,15 +276,15 @@ public class AggregatorTestTool {
                     amounts[i] = flexOffer.getSlice(i).getEnergyLower() + 0.5 * (flexOffer.getSlice(i).getEnergyUpper() -
                             flexOffer.getSlice(i).getEnergyLower());
                 }
-                System.out.println("Assign schedule!!!");
+                logger.info("Assign schedule!!!");
 
                 FlexOfferSchedule fos = new FlexOfferSchedule();
                 fos.setEnergyAmounts(amounts);
                 fos.setStartInterval(flexOffer.getStartAfterInterval());
                 flexOffer.setFlexOfferSchedule(fos);
-                
+
                 if (!httpClients.contains(flexOffer.getOfferedById())) {
-                    System.out.println("Send schedule!!!");
+                    logger.info("Send schedule!!!");
                     try {
                         xFOProvider.setSubscriberId(flexOffer.getOfferedById());
                         xFOProvider.createFlexOfferSchedule(flexOffer.getId(), flexOffer.getFlexOfferSchedule());
@@ -312,10 +292,10 @@ public class AggregatorTestTool {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    System.out.println("Done sending.");
+                    logger.info("Done sending.");
                 }
             }
-        }, 5*1*1000);
+        }, 5 * 1 * 1000);
     }
 
     public FlexOffer getFlexOffer(String ownerId, int flexOfferId) {
@@ -325,7 +305,7 @@ public class AggregatorTestTool {
         }
         return null;
     }
-    
+
     public void addToHttpClients(String id) {
         this.httpClients.add(id);
     }
