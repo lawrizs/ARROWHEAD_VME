@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MarketInfo implements Serializable {
 	private static final long serialVersionUID = 7820978382893009508L;
+	private String marketName;
 	private String area;
 	private long interval;
 	private Date nextPeriod;
@@ -45,7 +46,8 @@ public class MarketInfo implements Serializable {
 		
 	}
 	
-	public MarketInfo(String area, long interval, Date nextPeriod) {
+	public MarketInfo(String marketName, String area, long interval, Date nextPeriod) {
+		this.marketName = marketName;
 		this.area = area;
 		this.interval = interval;
 		this.nextPeriod = nextPeriod;
@@ -68,5 +70,13 @@ public class MarketInfo implements Serializable {
 	}
 	public void setNextPeriod(Date nextPeriod) {
 		this.nextPeriod = nextPeriod;
+	}
+
+	public String getMarketname() {
+		return marketName;
+	}
+
+	public void setMarketname(String marketName) {
+		this.marketName = marketName;
 	}
 }

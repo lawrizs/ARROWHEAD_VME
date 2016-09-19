@@ -27,8 +27,10 @@ package org.arrowhead.wp5.core.interfaces;
  */
 
 import org.arrowhead.wp5.core.entities.Bid;
+import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.MarketException;
 
 public interface MarketSubscriberIf {
 	public void acceptBid(Bid bid) throws MarketException;
+	public void acceptBidV2(BidV2 bid) throws MarketException;
 }

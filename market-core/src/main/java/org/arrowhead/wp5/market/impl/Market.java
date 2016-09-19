@@ -98,7 +98,7 @@ public class Market {
 		winningSupplyDownBids = new ArrayList<Bid>();
 		winningDemandUpBids = new ArrayList<Bid>();
 		winningDemandDownBids = new ArrayList<Bid>();
-		info = new MarketInfo("Area 52", 15, new Date());
+		info = new MarketInfo("Market V1", "Area 52", 15, new Date());
 	}
 	
 	public void clear() {

@@ -57,6 +57,7 @@ import org.arrowhead.wp5.com.xmpp.clients.marketclient.XMarketProviderClient;
 import org.arrowhead.wp5.core.entities.ArrowheadException;
 import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.FlexOffer;
+import org.arrowhead.wp5.core.entities.FlexOfferConstraint;
 import org.arrowhead.wp5.core.entities.FlexOfferException;
 import org.arrowhead.wp5.core.entities.FlexOfferSchedule;
 import org.arrowhead.wp5.core.entities.FlexOfferSlice;
@@ -64,6 +65,7 @@ import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.entities.MarketInfo;
 import org.arrowhead.wp5.core.interfaces.FlexOfferUpdateListener;
 import org.arrowhead.wp5.core.services.AggServiceManager;
+import org.arrowhead.wp5.core.util.FOConfig;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
@@ -85,33 +87,37 @@ import se.bnearit.arrowhead.common.core.service.discovery.exception.ServiceRegis
 public class AggregatorManager extends StandAloneApp implements
         FlexOfferUpdateListener {
     final static Logger logger = LoggerFactory.getLogger(AggregatorManager.class);
+    
+    private static final String PROPERTY_FILE_KEY = "foagg.configfile";
+    private static final String PROPERTY_FILE_DEFAULT = "aggregator-manager.properties";
 
     private HOXTWrapper hoxtManager;
 
-    private static final String id = "aggregator";
-    private static final String marketId = "market";
-    private String password = "XXXXX";
-    //	private static final String id = "schneider-agg";
-    //	private static final String id = "mondragon-agg";
-    private static final String XMPPhostname = "XXXXX.dpt.cs.aau.dk";
-    private static final int XMPPport = 5222;
+    private final String id;
+    private final String marketId;
+    private String password;
+    private final String xmppHostname;
+    private final String xmppService;
+    private final String xmppResource;
+    private final int xmppPort;
+    private final String xmppCertificate;
 
     private XMPPTCPConnectionConfiguration config;
 
-    private static final boolean ARROWHEAD_COMPLIANT = false;
-    private static final boolean CONNECT_TO_MARKET = false;
+    private final boolean ARROWHEAD_COMPLIANT;    
+    private final boolean CONNECT_TO_MARKET;
 
     private XFlexOfferProviderClient xFOProvider;
-    private XMarketProviderClient xMProvider;
+    private XMarketProviderClient xMProvider = null;
 
     private Aggregator agg;
 
     /* Local HTTP server */
-    private static final String BASE_URI_ADDRESS = "http://0.0.0.0/";
+    private static String BASE_URI_ADDRESS;
     private HttpServer server;
-    private final static int serverPort = 9998;
-    private final static URI BASE_URI = UriBuilder.fromUri(BASE_URI_ADDRESS)
-            .port(serverPort).path("api").build();
+    private final int serverPort;
+    private final String httpPath;
+    private final URI BASE_URI;
 
     /* Resouce managers/configs */
     private ResourceConfig resourceConfig;
@@ -126,6 +132,31 @@ public class AggregatorManager extends StandAloneApp implements
     
     /* Set of http client ids for which schedule should not be sent through XMPP */
     private HashSet<String> httpClients;
+    
+    
+    // Loading defaults
+    {
+        // @formatter:off
+        FOConfig config = new FOConfig(PROPERTY_FILE_KEY, PROPERTY_FILE_DEFAULT);
+
+        BASE_URI_ADDRESS =    config.getString( "foagg.base-uri-address",    "http://0.0.0.0/");
+        serverPort =          config.getInt(    "foagg.serverPort",          9998);        
+        httpPath =            config.getString( "foagg.http-path",           "api");
+        id =                  config.getString( "foagg.id",                  "aggregator");
+        password =            config.getString( "foagg.password",            "");
+        ARROWHEAD_COMPLIANT = config.getBoolean("foagg.arrowhead-compliant", "false");
+        
+        CONNECT_TO_MARKET  =  config.getBoolean("foagg.connect-to-market",   "false");
+        marketId = 			  config.getString( "foagg.marketid",            "market");
+        xmppHostname =        config.getString( "foagg.xmpp-server",         "");
+        xmppService =         config.getString( "foagg.xmpp-service",        "");
+        xmppResource =        config.getString( "foagg.xmpp-resource",       "");
+        xmppPort =            config.getInt(    "foagg.xmpp-port",           5222);
+        xmppCertificate =     config.getString( "foagg.xmpp-certificate",    "");
+
+        BASE_URI = UriBuilder.fromUri(BASE_URI_ADDRESS).port(serverPort).path(httpPath).build();
+        // @formatter:on
+    }
 
     public HttpServer getHTTPServer() {
         return this.server;
@@ -151,7 +182,6 @@ public class AggregatorManager extends StandAloneApp implements
         super();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @SuppressWarnings("unused")
             @Override
             public void run() {
                 if (ARROWHEAD_COMPLIANT && AggregatorManager.this.aggServiceManager != null) {
@@ -213,15 +243,15 @@ public class AggregatorManager extends StandAloneApp implements
         /* Initializes XMPP connection */
         //		new JHades().overlappingJarsReport();
 
-        System.setProperty("javax.net.ssl.trustStore",
-                "resources/clientstore.jks");
+        System.setProperty("javax.net.ssl.trustStore", xmppCertificate);
+        
         config = XMPPTCPConnectionConfiguration
                 .builder()
                 .setUsernameAndPassword(id, password)
-                .setServiceName("XXXXX")
-                .setHost(XMPPhostname)
-                .setResource("demo")
-                .setKeystorePath("resources/clientstore.jks")
+                .setServiceName(xmppService)
+                .setHost(xmppHostname)
+                .setResource(xmppResource)
+                .setKeystorePath(xmppCertificate)
                 .setSecurityMode(SecurityMode.required)
                 .setCompressionEnabled(false)
                 .build();
@@ -229,7 +259,16 @@ public class AggregatorManager extends StandAloneApp implements
         resourceManager.registerInstance(new XFlexOfferResource(this.agg));
         if (CONNECT_TO_MARKET) {
             resourceManager.registerInstance(new XMarketResource(this));
+            
+            MarketInfo info = this.getMarketInfo();
+            
+            if (info != null) {
+	            logger.debug("Area: {}", info.getArea());
+	            logger.debug("Interval: {}", info.getInterval());
+	            logger.debug("Next Period: {}", info.getNextPeriod());
+            }
         }
+        
         /* Start the XMPP server */
         try {
             hoxtManager = new HOXTWrapper(config, resourceManager);
@@ -237,71 +276,48 @@ public class AggregatorManager extends StandAloneApp implements
         } catch (SmackException | IOException | InterruptedException e1) {
             e1.printStackTrace();
         }
-        xFOProvider = new XFlexOfferProviderClient(
-                hoxtManager);
+        xFOProvider = new XFlexOfferProviderClient(hoxtManager);
+        
         if (CONNECT_TO_MARKET) {
             xMProvider = new XMarketProviderClient(marketId, hoxtManager);
-            MarketInfo info;
-            try {
-                info = xMProvider.getInfo();
-
-                logger.debug("Area: {}", info.getArea());
-                logger.debug("Interval: {}", info.getInterval());
-                logger.debug("Next Period: {}", info.getNextPeriod());
-
-                /* bidSupplyUp(10, 20);
-                bidSupplyDown(15, 25); */
-            } catch (MarketException e) {
-                e.printStackTrace();
-            }
         }
     }
+    
+    /* Sending/receiving bids from the market */    
+	public MarketInfo getMarketInfo() {
+		 try {
+             return xMProvider.getInfo();
+         } catch (Exception e) {
+        	 logger.error("No market info can be retrieved!");
+        	 return null;
+         }		 
+	}
 
-    //	public void bidSupplyUp(long price, long quantity) {
-    //		try {
-    //			xMProvider.bidSupply(bid(price, quantity, true));
-    //		} catch (MarketException e) {
-    //			e.printStackTrace();
-    //		}
-    //	}
-    //	
-    //	public void bidSupplyDown(long price, long quantity) {
-    //		try {
-    //			xMProvider.bidSupply(bid(price, quantity, false));
-    //		} catch (MarketException e) {
-    //			e.printStackTrace();
-    //		}
-    //	}
-    //
-    //	private AtomicInteger aint = new AtomicInteger();
-    //	private Bid bid(long price, long quantity, boolean isUp) {
-    //		return new Bid(price, quantity, isUp, id, "bid" + aint.getAndIncrement());
-    //	}
+    public void bidSupplySendToMarket(BidV2 bid) {
+    		try {    		
+    			if (xMProvider != null) {
+    				xMProvider.bidV2Supply(bid);
+    			} else {
+    				throw new MarketException("Not connected to the market!");
+    			}
+    		} catch (MarketException e) {
+    			e.printStackTrace();
+    		}
+    }    	
 
-//    public void bidMaketFO(MarketFlexOffer mFo) {
-//        this.agg.addMarketFlexOffer(mFo);
-//        try {
-//            xMProvider.bidSupply(mFo.getAsBid());
-//        } catch (MarketException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void acceptBid(Bid bid) {
-//        logger.debug("received accepted bid: p: {} wp: {} q: {} wq: {}", bid.getPrice(), bid.getWinPrice(), bid.getQuantity(), bid.getWinQuantity());
-//        logger.debug("  o: {} isUp: {} id: {}", bid.getOwner(), bid.isUp(), bid.getId());
-//
-//        this.agg.setWinningMarketFlexOffers(bid.getOwner(), bid.getId(), bid.getWinPrice(), new double[] { bid.getWinQuantity() });
-//    }
+    public void acceptBidV2(BidV2 bid) {
+        logger.debug("received accepted bid: p: {}", bid.getAvgUnitPrice());
+        
+        MarketCommitment mc = new MarketCommitment();
+        mc.setContract(this.agg.getMarketContract());
+        mc.setLocation(0 /* No location tag*/);
+        mc.setWinning_bid(bid);
+
+        this.agg.addMarketCommitment(mc);  
+    }
 
     @Override
     public void start() throws ArrowheadException {
-
-        //		if (ARROWHEAD_COMPLIANT) {
-        //			this.arrowheadSubsystem.init();
-        //			
-        //			this.configureArrowheadCompliantApp();
-        //		}
 
         try {
             /* Start the local HTTP server */
@@ -313,7 +329,7 @@ public class AggregatorManager extends StandAloneApp implements
             if (ARROWHEAD_COMPLIANT) {
                 //				this.arrowheadSubsystem.init();
                 this.aggServiceManager = new AggServiceManager();
-                this.aggServiceManager.publishXMPP((String) config.getUsername(), XMPPhostname, XMPPport, config.getResource());
+                this.aggServiceManager.publishXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
             }
 
             /* Print a welcome message */
@@ -443,6 +459,7 @@ public class AggregatorManager extends StandAloneApp implements
 
             List<FlexOfferSlice> sl = new ArrayList<FlexOfferSlice>();
 
+            double totalMinE=0, totalMaxE=0;
             for (int k = 0; k < maxSlices; k++) {
                 double minE, maxE;
 
@@ -454,10 +471,15 @@ public class AggregatorManager extends StandAloneApp implements
                     minE = maxE + Math.random() * EFmax;
                 }
 
+                totalMinE += minE;
+                totalMaxE += maxE;
                 sl.add(new FlexOfferSlice(1, 1, minE, maxE));
             }
 
             f.setSlices(sl.toArray(new FlexOfferSlice[] {}));
+            double perc = Math.random();
+            f.setTotalEnergyConstraint(new FlexOfferConstraint(totalMinE + (totalMaxE - totalMinE)*perc, 
+            		                                           totalMinE + (totalMaxE - totalMinE)*perc));
 
             // f.setDefaultSchedule(new FlexOfferSchedule(f)); /* Set default schedule */
 

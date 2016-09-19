@@ -32,6 +32,7 @@ import org.arrowhead.wp5.com.xmpp.api.HOXTWrapper;
 import org.arrowhead.wp5.com.xmpp.exceptions.HOXTException;
 import org.arrowhead.wp5.com.xmpp.util.HOXTUtil;
 import org.arrowhead.wp5.core.entities.Bid;
+import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.entities.MarketInfo;
 import org.arrowhead.wp5.core.interfaces.MarketProviderIf;
@@ -77,25 +78,39 @@ public class XMarketProviderClient implements MarketProviderIf {
 
 		return result;
 	}
-
+	
 	@Override
 	public void bidSupply(Bid bid) throws MarketException {
-		bid(bid, "supply");
+		// TODO Auto-generated method stub		
+		new UnsupportedOperationException("MarketV1 bids are no longer handled by Aggregator");
 	}
 
 	@Override
 	public void bidDemand(Bid bid) throws MarketException {
-		bid(bid, "demand");
+		// TODO Auto-generated method stub
+		new UnsupportedOperationException("MarketV1 bids are no longer handled by Aggregator");
 	}
 
-	private void bid(Bid bid, String uri) throws MarketException {
+	@Override
+	public void bidV2Supply(BidV2 bid) throws MarketException {
+		// TODO Auto-generated method stub
+		bidV2(bid, "supply");
+	}
+
+	@Override
+	public void bidV2Demand(BidV2 bid) throws MarketException {
+		// TODO Auto-generated method stub
+		bidV2(bid, "demand");
+	}
+	
+	private void bidV2(BidV2 bid, String uri) throws MarketException {
 		if (hoxtWrapper == null)
 			throw new MarketException("Not connected.");
 		logger.debug("Bid: {}", bid);
 		HttpOverXmppReq request = new HttpOverXmppReq(HttpMethod.POST,
 				"/market/" + uri);
 		try {
-			request.setData(HOXTUtil.getDataFromObject(Bid.class, bid));
+			request.setData(HOXTUtil.getDataFromObject(BidV2.class, bid));
 			HOXTWrapper.addRequired(request, false);
 		} catch (JAXBException e1) {
 			e1.printStackTrace();
@@ -110,6 +125,5 @@ public class XMarketProviderClient implements MarketProviderIf {
 		}
 
 		/** TODO use response for error handling */
-
 	}
 }

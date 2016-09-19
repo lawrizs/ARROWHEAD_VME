@@ -27,6 +27,7 @@ package org.arrowhead.wp5.core.interfaces;
  */
 
 import org.arrowhead.wp5.core.entities.Bid;
+import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.entities.MarketInfo;
 
@@ -35,4 +36,7 @@ public interface MarketProviderIf {
 	public MarketInfo getInfo() throws MarketException;
 	public void bidSupply(Bid bid) throws MarketException;
 	public void bidDemand(Bid bid) throws MarketException;
+
+	public void bidV2Supply(BidV2 bid) throws MarketException;
+	public void bidV2Demand(BidV2 bid) throws MarketException;
 }

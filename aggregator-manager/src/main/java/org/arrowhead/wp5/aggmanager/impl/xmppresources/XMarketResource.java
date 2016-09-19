@@ -32,6 +32,7 @@ import javax.ws.rs.Path;
 
 import org.arrowhead.wp5.aggmanager.impl.AggregatorManager;
 import org.arrowhead.wp5.core.entities.Bid;
+import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.interfaces.MarketSubscriberIf;
 
@@ -49,6 +50,11 @@ public class XMarketResource implements MarketSubscriberIf {
 	@PUT
 	@POST
 	public void acceptBid(Bid bid) throws MarketException {
-		//this.man.acceptBid(bid);
+		new UnsupportedOperationException("MarketV1 bids are not longer handled by Aggregator");
+	}
+
+	@Override
+	public void acceptBidV2(BidV2 bid) throws MarketException {
+		this.man.acceptBidV2(bid);		
 	}
 }

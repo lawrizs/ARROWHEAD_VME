@@ -45,8 +45,11 @@ import org.arrowhead.wp5.core.adapters.DateAdapter;
 import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.FlexOffer;
 import org.arrowhead.wp5.core.entities.FlexOfferException;
+import org.arrowhead.wp5.core.entities.MarketInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.jersey.api.client.ClientResponse.Status;
 
 
 
@@ -62,6 +65,18 @@ public class VMarketResource {
 		this.agg = man.getAggregator();
 	}
 	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public MarketInfo getMarketInfo() {
+		return this.man.getMarketInfo();
+		/*MarketInfo info = this.man.getMarketInfo();
+		
+		if (info != null) {
+			return Response.ok(info).build();
+		} else {
+			return Response.ok(null).build();
+		}			*/
+	}
 	
 	@GET
 	@Path("/generateBidFo")
@@ -101,6 +116,7 @@ public class VMarketResource {
 	
 	
 	@GET
+	@Path("/commitments")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public MarketCommitment[] getMarketCommitments()
 			throws FlexOfferException {

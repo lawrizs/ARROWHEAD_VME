@@ -24,6 +24,31 @@
   #L%
   -->
 <tabset>
+ 	<tab heading="Market Info">
+ 		<div ng-show="marketInfo.marketName == null">
+ 			Market information cannot be retrieved!
+ 		</div>
+ 		<table ng-show="marketInfo.marketName != null" class="table table-bordered">	    
+	    <tbody>
+	      <tr>
+	        <td><strong>Market Name</strong></td>
+	        <td>{{marketInfo.marketName}}</td>
+	      </tr>
+		  <tr>
+	        <td><strong>Area Name</strong></td>
+	        <td>{{marketInfo.area}}</td>
+	      </tr>	      
+		  <tr>
+	        <td><strong>Interval</strong></td>
+	        <td>{{marketInfo.interval}}</td>
+	      </tr>
+	      <tr>
+	        <td><strong>nextPeriod</strong></td>
+	        <td>{{marketInfo.nextPeriod}}</td>
+	      </tr>
+	    </tbody>
+	  </table>
+ 	</tab>
     <tab heading="Market Bid Generation">
     	<!-- <highchart id="chart1" config="chartConfig" class="span10"></highchart>  -->
     	<div class="container-fluid">

@@ -32,6 +32,7 @@ import org.arrowhead.wp5.com.xmpp.api.HOXTWrapper;
 import org.arrowhead.wp5.com.xmpp.exceptions.HOXTException;
 import org.arrowhead.wp5.com.xmpp.util.HOXTUtil;
 import org.arrowhead.wp5.core.entities.Bid;
+import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.interfaces.MarketSubscriberIf;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
@@ -49,6 +50,11 @@ public class XMarketSubscriberClient implements MarketSubscriberIf {
 
 	@Override
 	public void acceptBid(Bid bid) throws MarketException {
+		throw new UnsupportedOperationException("Market V1 bids are no longer supported");
+	}
+
+	@Override
+	public void acceptBidV2(BidV2 bid) throws MarketException {
 		if (hoxtManager == null)
 			throw new MarketException("Not connected.");
 		
@@ -71,7 +77,6 @@ public class XMarketSubscriberClient implements MarketSubscriberIf {
 		}
 		
 		/** TODO use response for error handling */
-
 	}
 
 }

@@ -27,7 +27,8 @@
 
 angular.module('foaManApp').controller('VMarketCtrl',
 		function($scope, $location, $timeout, serviceFOA) {
-			$scope.marketCommitments = serviceFOA.MarketCommitments.query();
+			$scope.marketInfo = serviceFOA.MarketInfo.get();
+			$scope.marketCommitments = serviceFOA.MarketCommitments.query();			
 			$scope.generatedFlexOffers = [];
 			$scope.updateTimeSeries = function() {
 				$scope.timeSeries = [ 

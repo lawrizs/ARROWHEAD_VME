@@ -31,6 +31,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import org.arrowhead.wp5.core.entities.Bid;
+import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.entities.MarketInfo;
 import org.arrowhead.wp5.core.interfaces.MarketProviderIf;
@@ -63,5 +64,15 @@ public class XMarketResource implements MarketProviderIf {
 	@POST
 	public void bidDemand(Bid bid) throws MarketException {
 		market.bidDemand(bid);
+	}
+
+	@Override
+	public void bidV2Supply(BidV2 bid) throws MarketException {
+		new UnsupportedOperationException("Market V2 bids are not supported!");		
+	}
+
+	@Override
+	public void bidV2Demand(BidV2 bid) throws MarketException {
+		new UnsupportedOperationException("Market V2 bids are not supported!");		
 	}
 }
