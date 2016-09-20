@@ -80,8 +80,6 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.bnearit.arrowhead.common.core.service.discovery.exception.ServiceRegisterException;
-
 public class AggregatorManager extends StandAloneApp implements
         FlexOfferUpdateListener {
     final static Logger logger = LoggerFactory.getLogger(AggregatorManager.class);
@@ -326,7 +324,7 @@ public class AggregatorManager extends StandAloneApp implements
         } catch (XMPPException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (ServiceRegisterException e) {
+        } catch (ArrowheadException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
