@@ -105,7 +105,7 @@ public class AggregatorOptimization {
 		this.optimizePortfolio();		
 		double baseCost = this.fp.computePortfolioCost();
 		TimeSeries ref_schedule = this.fp.getScheduledEnergy();		
-		
+			
 		/* Find an up-regulation schedule and cost */					
 		this.fp.getMarketCommitments().add(mc);
 		try {
@@ -135,7 +135,7 @@ public class AggregatorOptimization {
 		
 		double downCost = this.fp.computePortfolioCost();
 		TimeSeries down_schedule = this.fp.getScheduledEnergy();
-		
+				
 		/* Setup the actual bid */
 		FlexOfferSchedule ref_sch = new FlexOfferSchedule(bidFo);
 		ref_sch.setStartTime(bidFo.getStartAfterTime());
@@ -161,6 +161,10 @@ public class AggregatorOptimization {
 		bid = new BidV2();
 		bid.setBidFlexOffer(bidFo);
 		bid.setIs_seller_bid(true);
+		
+		bid.setSchedule_ref(ref_schedule);
+		bid.setSchedule_up(up_schedule);
+		bid.setSchedule_down(down_schedule);
 		
 		return bid;
 	}

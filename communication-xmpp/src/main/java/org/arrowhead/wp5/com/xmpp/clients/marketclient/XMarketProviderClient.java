@@ -93,13 +93,11 @@ public class XMarketProviderClient implements MarketProviderIf {
 
 	@Override
 	public void bidV2Supply(BidV2 bid) throws MarketException {
-		// TODO Auto-generated method stub
 		bidV2(bid, "supply");
 	}
 
 	@Override
 	public void bidV2Demand(BidV2 bid) throws MarketException {
-		// TODO Auto-generated method stub
 		bidV2(bid, "demand");
 	}
 	

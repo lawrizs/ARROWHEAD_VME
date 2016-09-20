@@ -45,10 +45,15 @@ public class BidV2 implements Serializable, Comparable<BidV2> {
 	private boolean is_seller_bid;
 	/* In Market V2, bid is represented as a FO */	
 	private FlexOffer bidFlexOffer;
-
+	
+	/* Reference schedules, associated to this bid */
+	private TimeSeries schedule_ref;   /* Baseline schedule */
+	private TimeSeries schedule_up;    /* Upregulation schedule */
+	private TimeSeries schedule_down;  /* Downregulation schedule */
 	
 	/* If the bid is winning, this has to be initialised */
 	double [] winPrices;
+
 	double [] winQuantities;
 	
 	
@@ -184,5 +189,30 @@ public class BidV2 implements Serializable, Comparable<BidV2> {
 	public int getNumSlices() {
 		return this.bidFlexOffer.getSlices().length;
 	}
+	
+	public TimeSeries getSchedule_ref() {
+		return schedule_ref;
+	}
+
+	public void setSchedule_ref(TimeSeries schedule_ref) {
+		this.schedule_ref = schedule_ref;
+	}
+
+	public TimeSeries getSchedule_up() {
+		return schedule_up;
+	}
+
+	public void setSchedule_up(TimeSeries schedule_up) {
+		this.schedule_up = schedule_up;
+	}
+
+	public TimeSeries getSchedule_down() {
+		return schedule_down;
+	}
+
+	public void setSchedule_down(TimeSeries schedule_down) {
+		this.schedule_down = schedule_down;
+	}
+
 	
 }
