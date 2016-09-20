@@ -107,6 +107,7 @@ public class VMarketResource {
 			man.bidSupplySendToMarket(mBid);
 			return Response.ok().build();
 		}catch (Exception e) {
+			logger.error("Error submitting the market bid: "+ e.getMessage());
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 	}

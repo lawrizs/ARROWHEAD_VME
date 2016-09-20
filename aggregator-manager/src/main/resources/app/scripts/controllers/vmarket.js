@@ -64,26 +64,46 @@ angular.module('foaManApp').controller('VMarketCtrl',
 	                    radius : 2
 					}
 				}];
-				var bNr = 0;
-				for(var i = 0; i < $scope.generatedBids.length; i++) {
+				
+				if ($scope.generatedBids.length > 0) {
+					var bid = $scope.generatedBids[0];
 					
-					var ts =function(mf) {
-						/*new serviceFOA.GenerateBidSchedule(mf).$save(function(ts) {					
-							$scope.timeSeries.push(
+					$scope.timeSeries.push(
 							 {
-								id : $scope.timeSeries.length + 1,
-								name : mf.id + " schedule",
-							    color: '#AA2244',
-								series : ts,
+								id : 4,
+								name : "Bid reference schedule",
+							    color: '#FFA500',
+								series : bid.schedule_ref,
 								marker : {
 				                    enabled : true,
 				                    radius : 4
 								}			
-							})});*/
-					};
+							});
 					
-					ts($scope.generatedBids[i].bidFlexOffer);
-				};
+					$scope.timeSeries.push(
+							 {
+								id : 5,
+								name : "Up-regulation schedule",
+							    color: '#00A500',
+								series : bid.schedule_up,
+								marker : {
+				                    enabled : true,
+				                    radius : 4
+								}			
+							});
+					
+					$scope.timeSeries.push(
+							 {
+								id : 6,
+								name : "Down-regulation schedule",
+							    color: '#A50000',
+								series : bid.schedule_down,
+								marker : {
+				                    enabled : true,
+				                    radius : 4
+								}			
+							});				
+				}				
 			};
 
 			$scope.updateTimeSeries();
