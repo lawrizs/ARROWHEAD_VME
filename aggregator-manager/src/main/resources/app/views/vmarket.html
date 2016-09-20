@@ -67,15 +67,15 @@
 			     	<timepicker ng-model="bidEndTime" hour-step="1" minute-step="15" show-meridian="false"></timepicker>
 			     </div>
 			     <div class="col-sm-6"> 
-		     		<button type="button" class="btn btn-default" ng-click="generateBid(bidStartTime, bidEndTime)">Generate a pair of bids</button>
-		     		<!-- <button type="button" class="btn btn-default" ng-click="sendBids(generatedFlexOffers)" ng-disabled="generatedFlexOffers.length == 0">Send the bid pair</button> -->
+		     		<button type="button" class="btn btn-default" ng-click="generateBid(bidStartTime, bidEndTime)">Generate the bid</button>
+		     		<button type="button" class="btn btn-default" ng-click="sendBids(generatedBids)" ng-disabled="generatedBids.length == 0">Send the bid</button>
 		     	</div>
 		     </div>
 		     
 		     <hr/>
 		     
 		     <div class="row">
-		     	<div ng-if="generatedFlexOffers.length > 0">
+		     	<div ng-if="generatedBids.length > 0">
 				     <table class="table table-striped"">
 				     	<tr>
 				     		<th>Bid Id</td>
@@ -85,32 +85,32 @@
 				     		<th>+&Delta; Energy</td>				     		
 				     		<th>Prices</td>
 				     	</tr>
-				     	<tr ng-repeat="f in generatedFlexOffers">				     		
-				     		<td>{{f.id}}</td>
+				     	<tr ng-repeat="b in generatedBids">				     		
+				     		<td>{{b.bidFlexOffer.id}}</td>
 				     		<td>Selling Bid</td>
 				     		<td>
-				     		   <span ng-repeat="a in f.defaultSchedule.energyAmounts track by $index">
+				     		   <span ng-repeat="a in b.bidFlexOffer.defaultSchedule.energyAmounts track by $index">
 				     			<p>{{a | number : 2 }} kWh</p>
 				     		   </span>
 				     		</td> 
 				     		<td>
-				     		   <span ng-repeat="s in f.slices track by $index">
-				     			<p>{{f.defaultSchedule.energyAmounts[$index] - s.energyConstraint.lower | number : 2 }} kWh</p>
+				     		   <span ng-repeat="s in b.bidFlexOffer.slices track by $index">
+				     			<p>{{b.bidFlexOffer.defaultSchedule.energyAmounts[$index] - s.energyConstraint.lower | number : 2 }} kWh</p>
 				     		   </span>
 				     		</td>				     		 				     						     		<td>
-				     		<span ng-repeat="s in f.slices track by $index">
-				     			<p>{{s.energyConstraint.upper - f.defaultSchedule.energyAmounts[$index] | number : 2 }} kWh</p>
+				     		<span ng-repeat="s in b.bidFlexOffer.slices track by $index">
+				     			<p>{{s.energyConstraint.upper - b.bidFlexOffer.defaultSchedule.energyAmounts[$index] | number : 2 }} kWh</p>
 				     		   </span>
 				     		</td> 				     		
 					  		<td>
-					  		  <span ng-repeat="slice in f.slices track by $index">
+					  		  <span ng-repeat="slice in b.bidFlexOffer.slices track by $index">
 					  		    <p>{{slice.costPerEnergyUnitLimit | currency:""}} DKK/&Delta;kWh</p>
 					  		  </span>
 					  		</td>
 					  	</tr>
 					</table>
 				</div>
-			    <agg-visual ng-model = "generatedFlexOffers" />
+			    <agg-visual ng-model = "generatedBids[0].bidFlexOffer" />
 	 	     </div>	    	    
 		</div>
     </tab>

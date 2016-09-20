@@ -556,13 +556,6 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 	
 	
 	public BidV2 generate_maketV2_bid(long timeFrom, long timeTo) {
-//		BidV2 bid = new BidV2();
-//		bid.setId(this.getId());
-//		bid.setOwner(this.getId());
-//		bid.setIs_seller_bid(true);
-//		bid.setBidFlexOffer(bidFlexOffer);
-//		
-//	
 		FlexOfferPortfolio fp = new FlexOfferPortfolio(this, aggFlexOffers.values(), this.market_commitments);
 		AggregatorOptimization opt = new AggregatorOptimization(fp);
 		try {

@@ -44,7 +44,9 @@ public class BidV2 implements Serializable, Comparable<BidV2> {
 	/* Specifies if it's a selling bid */
 	private boolean is_seller_bid;
 	/* In Market V2, bid is represented as a FO */	
-	private FlexOffer bidFlexOffer; 
+	private FlexOffer bidFlexOffer;
+
+	
 	/* If the bid is winning, this has to be initialised */
 	double [] winPrices;
 	double [] winQuantities;

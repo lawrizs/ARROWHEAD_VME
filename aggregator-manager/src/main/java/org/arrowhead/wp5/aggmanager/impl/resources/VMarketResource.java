@@ -69,48 +69,45 @@ public class VMarketResource {
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public MarketInfo getMarketInfo() {
 		return this.man.getMarketInfo();
-		/*MarketInfo info = this.man.getMarketInfo();
-		
-		if (info != null) {
-			return Response.ok(info).build();
-		} else {
-			return Response.ok(null).build();
-		}			*/
 	}
 	
 	@GET
-	@Path("/generateBidFo")
+	@Path("/generateBidV2")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public FlexOffer getBidFlexOffer(@QueryParam("bidStartTime") String bidStartTimeString, @QueryParam("bidEndTime") String bidEndTimeString) {
+	public BidV2 getBid(@QueryParam("bidStartTime") String bidStartTimeString, @QueryParam("bidEndTime") String bidEndTimeString) {
 		Date dtStart;
 		Date dtEnd;
 		try {
 			DateAdapter da = new DateAdapter();
 			dtStart = da.unmarshal(bidStartTimeString);
 			dtEnd = da.unmarshal(bidEndTimeString);
+			
+			long periodStart = FlexOffer.toFlexOfferTime(dtStart);
+			long periodEnd = FlexOffer.toFlexOfferTime(dtEnd);
+			BidV2 bid = this.agg.generate_maketV2_bid(periodStart, periodEnd);
+			
+			return bid;
+			
 		}
 		catch(Exception e) {
 			dtStart = new Date();	
 			dtEnd = new Date();
+			return null;
 		}
-		
-		long periodStart = FlexOffer.toFlexOfferTime(dtStart);
-		long periodEnd = FlexOffer.toFlexOfferTime(dtEnd);
-		BidV2 bid = this.agg.generate_maketV2_bid(periodStart, periodEnd);
-		
-		return bid.getBidFlexOffer();
 	}
+	
+	
 	
 	@POST
 	@Path("/sendMarketBid")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Response sendBidFlexOffersToMarket(FlexOffer mFo) {
+	public Response sendBidFlexOffersToMarket(BidV2 mBid) {
 		try{
-			// man.bidMaketFO(mFo);
+			man.bidSupplySendToMarket(mBid);
 			return Response.ok().build();
 		}catch (Exception e) {
-			return Response.status(-1).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 	

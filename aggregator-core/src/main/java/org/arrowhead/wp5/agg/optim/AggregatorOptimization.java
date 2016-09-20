@@ -150,8 +150,9 @@ public class AggregatorOptimization {
 			ref_sch.getEnergyAmounts()[i] = Math.min(Math.max(ref_val, min_val), max_val);						
 			bidFo.getSlice(i).getEnergyConstraint().setLower(min_val);
 			bidFo.getSlice(i).getEnergyConstraint().setUpper(max_val);
-			bidFo.getSlice(i).setCostPerEnergyUnitLimit(Math.max((downCost - baseCost) / (ref_val - min_val), 
-																 (upCost - baseCost) / (max_val - ref_val) ) / slices.length);
+			bidFo.getSlice(i).setCostPerEnergyUnitLimit(Math.max(
+					Math.abs(ref_val - min_val)>1e-6 ?  (downCost - baseCost) / (ref_val - min_val) : 0,
+					Math.abs(max_val - ref_val)>1e-6 ?  (upCost - baseCost) / (max_val - ref_val) : 0 ) / slices.length);
 		}
 		bidFo.setDefaultSchedule(ref_sch);
 		bidFo.setFlexOfferSchedule(null);

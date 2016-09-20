@@ -29,7 +29,7 @@ angular.module('foaManApp').controller('VMarketCtrl',
 		function($scope, $location, $timeout, serviceFOA) {
 			$scope.marketInfo = serviceFOA.MarketInfo.get();
 			$scope.marketCommitments = serviceFOA.MarketCommitments.query();			
-			$scope.generatedFlexOffers = [];
+			$scope.generatedBids = [];
 			$scope.updateTimeSeries = function() {
 				$scope.timeSeries = [ 
 					{
@@ -65,7 +65,7 @@ angular.module('foaManApp').controller('VMarketCtrl',
 					}
 				}];
 				var bNr = 0;
-				for(var i = 0; i < $scope.generatedFlexOffers.length; i++) {
+				for(var i = 0; i < $scope.generatedBids.length; i++) {
 					
 					var ts =function(mf) {
 						/*new serviceFOA.GenerateBidSchedule(mf).$save(function(ts) {					
@@ -82,7 +82,7 @@ angular.module('foaManApp').controller('VMarketCtrl',
 							})});*/
 					};
 					
-					ts($scope.generatedFlexOffers[i]);
+					ts($scope.generatedBids[i].bidFlexOffer);
 				};
 			};
 
@@ -106,18 +106,18 @@ angular.module('foaManApp').controller('VMarketCtrl',
 			$scope.bidEndTime.setMinutes($scope.bidEndTime.getMinutes() + 15);
 			
 			$scope.generateBid = function(bidStartTime, bidEndTime) {
-				var fos = serviceFOA.GenerateBidFlexOffer.get({bidStartTime: bidStartTime, bidEndTime: bidEndTime}, function(mfos) {
-					$scope.generatedFlexOffers = mfos == null ? [] : [mfos] ;
+				var bids = serviceFOA.GenerateBidV2.get({bidStartTime: bidStartTime, bidEndTime: bidEndTime}, function(mbids) {
+					$scope.generatedBids = mbids == null ? [] : [mbids] ;
 					$scope.updateTimeSeries();
 				});
 				
 			};
 			
-			$scope.sendBids = function(mfos) {
-				var sBid1 = new serviceFOA.SendMarketBids(mfos[0]).$save(function(res) {
-					var sBid2 = new serviceFOA.SendMarketBids(mfos[1]).$save(function(res) {
-							$scope.marketFlexOffers = serviceFOA.BidFlexOffers.query();
-					});
+			$scope.sendBids = function(mbids) {
+				var sBid1 = new serviceFOA.SendMarketBid(mbids[0]).$save(function(res) {
+						alert("Bid successfully submitted to the Market!");
+				}, function(err) {
+						alert("Error submitting the bid to the Market!");
 				});				
 			};
 		});

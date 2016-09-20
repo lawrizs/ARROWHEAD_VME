@@ -43,7 +43,10 @@ public class MarketInfo implements Serializable {
 	private Date nextPeriod;
 	
 	public MarketInfo() {
-		
+		this.marketName = "";
+		this.area = "";
+		this.interval = 0;
+		this.nextPeriod = new Date();
 	}
 	
 	public MarketInfo(String marketName, String area, long interval, Date nextPeriod) {

@@ -293,16 +293,12 @@ public class AggregatorManager extends StandAloneApp implements
          }		 
 	}
 
-    public void bidSupplySendToMarket(BidV2 bid) {
-    		try {    		
-    			if (xMProvider != null) {
-    				xMProvider.bidV2Supply(bid);
-    			} else {
-    				throw new MarketException("Not connected to the market!");
-    			}
-    		} catch (MarketException e) {
-    			e.printStackTrace();
-    		}
+    public void bidSupplySendToMarket(BidV2 bid) throws MarketException {
+			if (xMProvider != null) {
+				xMProvider.bidV2Supply(bid);
+			} else {
+				throw new MarketException("Not connected to the market!");
+			}
     }    	
 
     public void acceptBidV2(BidV2 bid) {
@@ -373,8 +369,7 @@ public class AggregatorManager extends StandAloneApp implements
                 xFOProvider.createFlexOfferSchedule(fo.getId(),
                         fo.getFlexOfferSchedule());
             } catch (FlexOfferException e) {
-                // TODO Need to handle this error based on HTTP return code if
-                // any
+                // TODO Need to handle this error based on HTTP return code if any
                 e.printStackTrace();
             }
             
@@ -500,49 +495,7 @@ public class AggregatorManager extends StandAloneApp implements
         // TODO Auto-generated method stub
 
     }
-
-    /*
-     * Configure Arrowhead compliant application
-     */
-    //	public void configureArrowheadCompliantApp() throws ArrowheadException
-    //	{
-    //		List<String> producersDiscovered = new ArrayList<>();
-    //		List<String> orchestratedProducers = new ArrayList<>();
-    //		
-    //		// get all producers from Service Discovery
-    //		this.producersList = this.arrowheadSubsystem.lookupServiceProducers(FOAgentServiceTypes.XMPP_FOA_SECURE);
-    //		
-    //		for (int i = 0; i < this.producersList.size(); i++)
-    //		{
-    //			producersDiscovered.add(this.producersList.get(i).get("name"));
-    //		}
-    //		
-    //		System.out.println(producersDiscovered);
-    //		
-    //		// get active configuration
-    //		this.orchestrationConfig = this.arrowheadSubsystem.checkActiveConfiguration();
-    //		
-    //		for (int i = 0; i < this.orchestrationConfig.getRules().size(); i++)
-    //		{
-    //			String orchestratedProducer = this.orchestrationConfig.getRules().get(i);
-    //			orchestratedProducers.add(orchestratedProducer.split("\\.")[0]);
-    //		}
-    //		
-    //		System.out.println(orchestratedProducers);
-    //		
-    //		producersDiscovered.retainAll(orchestratedProducers);
-    //		
-    //		System.out.println(producersDiscovered);
-    //		
-    //		if (!producersDiscovered.isEmpty())
-    //		{
-    //			Random randomGenerator = new Random();
-    //			
-    //			int index = randomGenerator.nextInt(producersDiscovered.size());
-    //            this.xFOProvider.setSubscriberId(producersDiscovered.get(index));
-    //		}
-    //	}
-
+    
     public void schedule() throws FlexOfferException {
         for (FlexOffer aggFo : this.agg.getFlexOffers())
             this.agg.createFlexOfferSchedule(aggFo.getId(), new FlexOfferSchedule(aggFo));

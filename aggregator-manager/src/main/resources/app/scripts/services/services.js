@@ -51,9 +51,9 @@ angular.module('foaManApp')
 	factory.CustomerBill = $resource(factory.rootUrl + 'api/billing/bill/:cid');
 	factory.MarketInfo = $resource(factory.rootUrl + 'api/vmarket');
 	factory.MarketCommitments = $resource(factory.rootUrl + 'api/vmarket/commitments');
-	factory.GenerateBidFlexOffer = $resource(factory.rootUrl + 'api/vmarket/generateBidFo');
+	factory.GenerateBidV2 = $resource(factory.rootUrl + 'api/vmarket/generateBidV2');
 	/* factory.GenerateBidSchedule = $resource(factory.rootUrl + 'api/vmarket/bidSchedule'); */
-	/* factory.SendMarketBids = $resource(factory.rootUrl + 'api/vmarket/sendMarketBids'); */
+	factory.SendMarketBid = $resource(factory.rootUrl + 'api/vmarket/sendMarketBid');
 	factory.TriggerRandomAssignments = $resource(factory.rootUrl + 'api/schedule', {},  {   'save':   {method:'POST'}  });
 	
 	return factory;
