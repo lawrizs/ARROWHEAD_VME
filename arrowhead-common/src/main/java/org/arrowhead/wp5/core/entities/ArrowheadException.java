@@ -30,10 +30,14 @@ package org.arrowhead.wp5.core.entities;
 /** Exception related to Arrowhead Framework */
 
 public class ArrowheadException extends Exception {
-	
-	public ArrowheadException(String string) {
-		super(string);
-	}
 
-	private static final long serialVersionUID = 927720534755712476L;
+    public ArrowheadException(String string) {
+        super(string);
+    }
+
+    public ArrowheadException(Throwable cause) {
+        super(cause);
+    }
+
+    private static final long serialVersionUID = 927720534755712476L;
 }

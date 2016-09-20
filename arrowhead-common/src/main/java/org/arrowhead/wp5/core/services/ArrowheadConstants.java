@@ -27,8 +27,10 @@ package org.arrowhead.wp5.core.services;
  */
 
 public final class ArrowheadConstants {
-    public static final String XMPP_TYPE = "_foagg-xmpp._tcp";
-    public static final String HTTP_TYPE = "_foagg-http._tcp";
+    public static final String AGG_XMPP_TYPE = "_foagg-xmpp._tcp";
+    public static final String AGG_HTTP_TYPE = "_foagg-http._tcp";
+    public static final String MARKET_XMPP_TYPE = "_fomarket-xmpp._tcp";
+    public static final String MARKET_HTTP_TYPE = "_fomarket-http._tcp";
     public static final String JABBER_ID_NAME = "jabberid";
     public static final String RESOURCE_NAME = "resource";
     public static final String PATH_NAME = "path";

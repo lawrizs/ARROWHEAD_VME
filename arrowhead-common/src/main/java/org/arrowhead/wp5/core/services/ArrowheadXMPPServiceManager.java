@@ -88,7 +88,7 @@ public class ArrowheadXMPPServiceManager {
 		
 		List<String> rules = getOrchestration();
 		
-		List<ServiceIdentity> services = sd.getServicesByType(ArrowheadConstants.XMPP_TYPE);
+		List<ServiceIdentity> services = sd.getServicesByType(ArrowheadConstants.AGG_XMPP_TYPE);
 		for (ServiceIdentity si : services) {
 			if (rules.contains(si.getId())) {
 				useServiceInfo(si);
