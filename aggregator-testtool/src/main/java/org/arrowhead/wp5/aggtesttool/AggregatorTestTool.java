@@ -130,8 +130,8 @@ public class AggregatorTestTool {
 
             if (ARROWHEAD_COMPLIANT) {
                 this.aggServiceManager = new AggServiceManager();
-                this.aggServiceManager.publishXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
-                this.aggServiceManager.publishHTTP((String) config.getUsername(), httpHostname, serverPort, httpPath);
+                this.aggServiceManager.publishAggXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
+                this.aggServiceManager.publishAggHTTP((String) config.getUsername(), httpHostname, serverPort, httpPath);
             }
 
             /* Print a welcome message */

@@ -111,7 +111,7 @@ public class AggregatorManager extends StandAloneApp implements
     private Aggregator agg;
 
     /* Local HTTP server */
-    private static String BASE_URI_ADDRESS;
+    private final String BASE_URI_ADDRESS;
     private HttpServer server;
     private final int serverPort;
     private final String httpPath;
@@ -323,7 +323,7 @@ public class AggregatorManager extends StandAloneApp implements
             if (ARROWHEAD_COMPLIANT) {
                 //				this.arrowheadSubsystem.init();
                 this.aggServiceManager = new AggServiceManager();
-                this.aggServiceManager.publishXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
+                this.aggServiceManager.publishAggXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
             }
 
             /* Print a welcome message */
