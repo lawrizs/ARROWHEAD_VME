@@ -295,7 +295,7 @@ public class AggregatorManager extends StandAloneApp implements
 
     public void bidSupplySendToMarket(BidV2 bid) throws MarketException {
 			if (xMProvider != null) {
-				xMProvider.bidV2Supply(bid);
+				xMProvider.sendBidV2(bid);
 			} else {
 				throw new MarketException("Not connected to the market!");
 			}

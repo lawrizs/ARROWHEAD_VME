@@ -61,7 +61,7 @@ public class AggregatorOptimization {
 		TimeFlexOptimizer tsOpt = new TimeFlexOptimizer(this.fp);		
 		tsOpt.optimizeTimeFlex();
 		
-		/* Solve the swarm ops problem */
+		/* STEP 2: Solve the swarm ops problem */
 		AmountFlexOptimizer apOpt = new AmountFlexOptimizer(this.fp);
 		apOpt.optimizeAmounts();
 			

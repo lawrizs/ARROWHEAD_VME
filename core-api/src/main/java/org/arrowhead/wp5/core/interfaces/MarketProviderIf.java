@@ -37,6 +37,5 @@ public interface MarketProviderIf {
 	public void bidSupply(Bid bid) throws MarketException;
 	public void bidDemand(Bid bid) throws MarketException;
 
-	public void bidV2Supply(BidV2 bid) throws MarketException;
-	public void bidV2Demand(BidV2 bid) throws MarketException;
+	public void sendBidV2(BidV2 bid) throws MarketException;
 }
