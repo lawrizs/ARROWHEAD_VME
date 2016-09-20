@@ -72,7 +72,7 @@ public class FlexOfferManager extends StandAloneApp implements
 
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private Properties properties = new Properties();
-	
+
 	/** The base URI address for the web server interface (that makes UI available) */
 	private final String BASE_URI_ADDRESS;
 	/** Port for the http server, at which the UI will be available */
@@ -83,13 +83,18 @@ public class FlexOfferManager extends StandAloneApp implements
 	/** TODO this should be obtained through service discovery */
 	private String aggId;
 
+	private final String keystoreFilename;
+	private final String keystorePassword;
+	private final String truststoreFilename;
+	private final String truststorePassword;
+
 	/** The HTTP server */
 	private HttpServer server;
-	
+
 	// Loading defaults
 	{
 		loadProperties();
-		
+
 		BASE_URI_ADDRESS = properties.getProperty("fom.base-uri-address", "http://0.0.0.0/").trim();
 		int port = 9997;
 		try {
@@ -103,13 +108,18 @@ public class FlexOfferManager extends StandAloneApp implements
 		ARROWHEAD_COMPLIANT = Boolean.parseBoolean(properties.getProperty("fom.arrowhead-compliant", "false"));
 		xmppServer = properties.getProperty("fom.xmpp-server", "XXXXX.dpt.cs.aau.dk").trim();
 		xmppResource = properties.getProperty("fom.xmpp-resource", "demo").trim();
+
+		keystoreFilename = properties.getProperty("fom.keystoreFilename", "alpha.jks").trim();
+		keystorePassword = properties.getProperty("fom.keystorePassword", "XXXXX").trim();
+		truststoreFilename = properties.getProperty("fom.truststoreFilename", "alpha.jks").trim();
+		truststorePassword = properties.getProperty("fom.truststorePassword", "XXXXX").trim();
 	}
-	
+
 	/** Build the base URI for the HTTP server */
 	private final URI BASE_URI = UriBuilder.fromUri(BASE_URI_ADDRESS).port(serverPort).path("api").build();
 	/** Flag to activate/deactivate arrowhead connection */
 	private final boolean ARROWHEAD_COMPLIANT;
-	
+
 	/**The password used to connect to the XMPP server*/
 	private String password;
 	/** Object that contains the information about the XMPP connection*/
@@ -142,7 +152,7 @@ public class FlexOfferManager extends StandAloneApp implements
 //	private ArrowheadSubsystem arrowheadSubsystem;
 //	private List<HashMap<String, String>> producersList;
 //	private OrchestrationConfig orchestrationConfig; 
-	
+
 	public HttpServer getHTTPServer() {
 		return this.server;
 	}
@@ -200,7 +210,7 @@ public class FlexOfferManager extends StandAloneApp implements
 		logger.debug("password: {}", password);
 		logger.debug("resource: {}", xmppResource);
 		logger.debug("xmppServer: {}", xmppServer);
-		
+
 		/* Initialize flex-offer agent */
 		this.agent = new FlexOfferAgent(id, this);
 		/* Initialize resource config */
@@ -214,7 +224,7 @@ public class FlexOfferManager extends StandAloneApp implements
 		this.resourceConfig.register(MoxyJsonFeature.class);
 
 		/* Initializes Arrowhead Subsystem */
-		this.foServiceManager = new ArrowheadXMPPServiceManager(properties);
+		this.foServiceManager = new ArrowheadXMPPServiceManager(keystoreFilename, keystorePassword, truststoreFilename, truststorePassword);
 //		this.arrowheadSubsystem = new ArrowheadSubsystem();
 
 		this.xmppConDetails = new XmppConnectionDetails(
@@ -279,7 +289,7 @@ public class FlexOfferManager extends StandAloneApp implements
 
 		if (ARROWHEAD_COMPLIANT) {
 			this.foServiceManager.start();
-			
+
 			if (this.foServiceManager.fetchInfo()) {
 				aggId = this.foServiceManager.getAggId();
 				xmppServer = this.foServiceManager.getHostname();
@@ -288,12 +298,12 @@ public class FlexOfferManager extends StandAloneApp implements
 			} else {
 				logger.warn("Failed to discover aggregator through Arrowhead framework. Using default config");
 			}
-			
+
 //			this.arrowheadSubsystem.init();
-			
+
 //			this.configureArrowheadCompliantApp();
 		}
-		
+
 		initHttpServer();
 
 		if (isXmppConnected) {
@@ -319,7 +329,7 @@ public class FlexOfferManager extends StandAloneApp implements
 			logger.error("Failed to read property file {}.", filename, e);
 		}
 	}
-	
+
 	@Override
 	public void stop() {
 		this.server.shutdownNow();
@@ -381,7 +391,7 @@ public class FlexOfferManager extends StandAloneApp implements
 			}
 		}
 	}
-	
+
 	/*
 	 * Configure Arrowhead compliant application
 	 */
@@ -389,36 +399,36 @@ public class FlexOfferManager extends StandAloneApp implements
 //	{
 //		List<String> producersDiscovered = new ArrayList<>();
 //		List<String> orchestratedProducers = new ArrayList<>();
-//		
+//
 //		// get all producers from Service Discovery
 //		this.producersList = this.arrowheadSubsystem.lookupServiceProducers(FOAggregatorServiceTypes.XMPP_FOAGG_SECURE);
-//		
+//
 //		for (int i = 0; i < this.producersList.size(); i++)
 //		{
 //			producersDiscovered.add(this.producersList.get(i).get("name"));
 //		}
-//		
+//
 //		System.out.println("[Service Discovery] Producers Discovered: " + producersDiscovered);
-//		
+//
 //		// get active configuration
 //		this.orchestrationConfig = this.arrowheadSubsystem.checkActiveConfiguration();
-//		
+//
 //		for (int i = 0; i < this.orchestrationConfig.getRules().size(); i++)
 //		{
 //			String orchestratedProducer = this.orchestrationConfig.getRules().get(i);
 //			orchestratedProducers.add(orchestratedProducer.split("\\.")[0]);
 //		}
-//		
+//
 //		System.out.println("[Orchestration] Orchestrated Service Producers: " + orchestratedProducers);
-//		
+//
 //		producersDiscovered.retainAll(orchestratedProducers);
-//		
+//
 //		System.out.println("Advised Service Producers: " + producersDiscovered);
-//		
+//
 //		if (!producersDiscovered.isEmpty())
 //		{
 //			Random randomGenerator = new Random();
-//			
+//
 //			int index = randomGenerator.nextInt(producersDiscovered.size());
 //            this.aggId = producersDiscovered.get(index);
 //            System.out.println("Chosen Service Producer: " + this.aggId);

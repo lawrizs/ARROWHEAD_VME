@@ -1,8 +1,8 @@
-package org.arrowhead.wp5.aggmanager.service;
+package org.arrowhead.wp5.core.entities;
 
 /*-
  * #%L
- * ARROWHEAD::WP5::Aggregator Manager
+ * ARROWHEAD::WP5::Core Data Structures
  * %%
  * Copyright (C) 2016 The ARROWHEAD Consortium
  * %%
@@ -27,19 +27,17 @@ package org.arrowhead.wp5.aggmanager.service;
  */
 
 
-import java.util.List;
+/** Exception related to Arrowhead Framework */
 
-import se.bnearit.arrowhead.common.service.ServiceEndpoint;
+public class ArrowheadException extends Exception {
 
-public interface ServiceConsumerFactory
-{
-	public List<String> getSupportedServiceTypes();
-	
-	public FOAgentServiceConsumer createServiceConsumer(String name, String type, ServiceEndpoint endpoint);
-	
-	public List<FOAgentServiceConsumer> getAllServiceConsumers();
-	
-	//public void destroyServiceConsumer(String name);
-	
-	public void destroyAllConsumers();
+    public ArrowheadException(String string) {
+        super(string);
+    }
+
+    public ArrowheadException(Throwable cause) {
+        super(cause);
+    }
+
+    private static final long serialVersionUID = 927720534755712476L;
 }

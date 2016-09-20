@@ -43,11 +43,11 @@ public class ArrowheadRegistryBrowser {
     public ArrowheadRegistryBrowser() {
         sd = new ServiceDiscoveryDnsSD();
     }
-    
+
     public void listServices() {
 //        List<ServiceIdentity> services = sd.getServicesByType(ArrowheadConstants.XMPP_TYPE);
         List<ServiceIdentity> services = sd.getAllServices();
-        
+
         if (services.size() == 0) {
             System.out.println("No services found.");
         } else {
@@ -56,7 +56,7 @@ public class ArrowheadRegistryBrowser {
             }
         }
     }
-    
+
     public static void main(String[] args) {
         ArrowheadRegistryBrowser arb = new ArrowheadRegistryBrowser();
         arb.listServices();

@@ -26,10 +26,10 @@ package org.arrowhead.wp5.core.services;
  * #L%
  */
 
-//import org.arrowhead.wp5.com.utils.DnsSdHostname;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.arrowhead.wp5.core.entities.ArrowheadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,96 +42,104 @@ import se.bnearit.arrowhead.common.service.ServiceInformation;
 import se.bnearit.arrowhead.common.service.ServiceMetadata;
 
 public class AggServiceManager {
-	final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private ServiceDiscoveryDnsSD sd;
-	private Set<ServiceInformation> sis;
-	
-	public AggServiceManager() {
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private ServiceDiscoveryDnsSD sd;
+    private Set<ServiceInformation> sis;
+
+    public AggServiceManager() {
 //		/*TODO in next version of Smack use getXmppServiceDomain*/
 
 //		DnsSdHostname.setHostname();
 
-		sd = new ServiceDiscoveryDnsSD();
-		sis = new HashSet<ServiceInformation>();
-	}
+        sd = new ServiceDiscoveryDnsSD();
+        sis = new HashSet<ServiceInformation>();
+    }
 
-    public void publishXMPP(String username, String xmppHostname, int xmppPort, String resource) throws ServiceRegisterException {
-        for (ServiceIdentity si : sd.getServicesByType(ArrowheadConstants.XMPP_TYPE)) {
-            String[] s = si.getId().split("\\.");
-            if (s.length > 0 && username.equals(s[0])) {
-                logger.info("Service already registered, unregistering...");
-                sd.unpublish(si);
+    public void publishXMPP(String username, String xmppHostname, int xmppPort, String resource) throws ArrowheadException {
+        try {
+            for (ServiceIdentity si : sd.getServicesByType(ArrowheadConstants.AGG_XMPP_TYPE)) {
+                String[] s = si.getId().split("\\.");
+                if (s.length > 0 && username.equals(s[0])) {
+                    logger.info("Service already registered, unregistering...");
+                    sd.unpublish(si);
+                }
+            }
+
+            String idd = sd.createServiceName(username, ArrowheadConstants.AGG_XMPP_TYPE);
+
+            ServiceMetadata metadata = new ServiceMetadata();
+            metadata.put(ArrowheadConstants.JABBER_ID_NAME, username);// + "@" + xmppHostname);
+            metadata.put(ArrowheadConstants.RESOURCE_NAME, resource);
+
+            ServiceInformation si = new ServiceInformation(
+                    new ServiceIdentity(idd, ArrowheadConstants.AGG_XMPP_TYPE),
+                    new TcpEndpoint(xmppHostname, xmppPort),
+                    metadata);
+
+            sis.add(si);
+
+            publish(si);
+        } catch (ServiceRegisterException sre) {
+            throw new ArrowheadException(sre);
+        }
+    }
+
+    public void publishHTTP(String username, String httpHostname, int httpPort, String path) throws ArrowheadException {
+        try {
+            for (ServiceIdentity si : sd.getServicesByType(ArrowheadConstants.AGG_HTTP_TYPE)) {
+                String[] s = si.getId().split("\\.");
+                if (s.length > 0 && username.equals(s[0])) {
+                    logger.info("Service already registered, unregistering...");
+                    sd.unpublish(si);
+                }
+            }
+
+            String idd = sd.createServiceName(username, ArrowheadConstants.AGG_HTTP_TYPE);
+
+            ServiceMetadata metadata = new ServiceMetadata();
+            metadata.put(ArrowheadConstants.PATH_NAME, path);// + "@" + xmppHostname);
+
+            ServiceInformation si = new ServiceInformation(
+                    new ServiceIdentity(idd, ArrowheadConstants.AGG_HTTP_TYPE),
+                    new TcpEndpoint(httpHostname, httpPort),
+                    metadata);
+
+            sis.add(si);
+
+            publish(si);
+        } catch (ServiceRegisterException sre) {
+            throw new ArrowheadException(sre);
+        }
+    }
+
+    public void shutdown() {
+        for (ServiceInformation si : sis) {
+            if (isPublished(si)) {
+                unpublish(si);
             }
         }
-        
-        String idd = sd.createServiceName(username, ArrowheadConstants.XMPP_TYPE);
-
-        ServiceMetadata metadata = new ServiceMetadata();
-        metadata.put(ArrowheadConstants.JABBER_ID_NAME, username);// + "@" + xmppHostname);
-        metadata.put(ArrowheadConstants.RESOURCE_NAME, resource);
-        
-        ServiceInformation si = new ServiceInformation(
-                new ServiceIdentity(idd, ArrowheadConstants.XMPP_TYPE), 
-                new TcpEndpoint(xmppHostname, xmppPort), 
-                metadata);
-        
-        sis.add(si);
-
-        publish(si);
     }
-    
-    public void publishHTTP(String username, String httpHostname, int httpPort, String path) throws ServiceRegisterException {
-        for (ServiceIdentity si : sd.getServicesByType(ArrowheadConstants.HTTP_TYPE)) {
-            String[] s = si.getId().split("\\.");
-            if (s.length > 0 && username.equals(s[0])) {
-                logger.info("Service already registered, unregistering...");
-                sd.unpublish(si);
-            }
+
+    private boolean isPublished(ServiceInformation si) {
+        return sd.isPublished(si);
+    }
+
+    private void publish(ServiceInformation si) throws ServiceRegisterException {
+        try {
+            sd.publish(si);
+        } catch (MetadataException e) {
+            // This should only happen if new end points are implemented in ServiceDiscoveryDnsSD
+            logger.error("MetadataException: Some metadata keys are trying to override EndPoint keys.", e);
+            e.printStackTrace();
         }
-        
-        String idd = sd.createServiceName(username, ArrowheadConstants.HTTP_TYPE);
-
-        ServiceMetadata metadata = new ServiceMetadata();
-        metadata.put(ArrowheadConstants.PATH_NAME, path);// + "@" + xmppHostname);
-        
-        ServiceInformation si = new ServiceInformation(
-                new ServiceIdentity(idd, ArrowheadConstants.HTTP_TYPE), 
-                new TcpEndpoint(httpHostname, httpPort), 
-                metadata);
-        
-        sis.add(si);
-
-        publish(si);
     }
-    
-	public void shutdown() {
-	    for (ServiceInformation si : sis) {
-    		if (isPublished(si)) {
-    			unpublish(si);
-    		}
-	    }
-	}
 
-	private boolean isPublished(ServiceInformation si) {
-		return sd.isPublished(si);
-	}
-
-	private void publish(ServiceInformation si) throws ServiceRegisterException {
-		try {
-			sd.publish(si);
-		} catch (MetadataException e) {
-			// This should only happen if new end points are implemented in ServiceDiscoveryDnsSD
-			logger.error("MetadataException: Some metadata keys are trying to override EndPoint keys.", e);
-			e.printStackTrace();
-		}
-	}
-
-	private void unpublish(ServiceInformation si) {
-		try {
-			sd.unpublish(si.getIdentity());
-		} catch (ServiceRegisterException e) {
-			logger.warn("Unpublish failed!", e);
-			e.printStackTrace();
-		}
-	}
+    private void unpublish(ServiceInformation si) {
+        try {
+            sd.unpublish(si.getIdentity());
+        } catch (ServiceRegisterException e) {
+            logger.warn("Unpublish failed!", e);
+            e.printStackTrace();
+        }
+    }
 }
