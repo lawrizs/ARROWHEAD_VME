@@ -15,6 +15,7 @@ import org.arrowhead.wp5.aggtesttool.xmppresources.XFlexOfferResource;
 import org.arrowhead.wp5.com.xmpp.api.HOXTWrapper;
 import org.arrowhead.wp5.com.xmpp.api.ResourceManager;
 import org.arrowhead.wp5.com.xmpp.clients.flexofferclient.XFlexOfferProviderClient;
+import org.arrowhead.wp5.core.entities.ArrowheadException;
 import org.arrowhead.wp5.core.entities.FlexOffer;
 import org.arrowhead.wp5.core.entities.FlexOfferException;
 import org.arrowhead.wp5.core.entities.FlexOfferSchedule;
@@ -31,8 +32,6 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import se.bnearit.arrowhead.common.core.service.discovery.exception.ServiceRegisterException;
 
 public class AggregatorTestTool {
 
@@ -143,7 +142,7 @@ public class AggregatorTestTool {
         } catch (XMPPException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (ServiceRegisterException e) {
+        } catch (ArrowheadException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
