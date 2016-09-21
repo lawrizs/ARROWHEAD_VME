@@ -92,18 +92,21 @@ public class AggregatorTestTool {
     }
 
     public static void main(String[] args) {
-        new AggregatorTestTool();
+        try {
+            new AggregatorTestTool();
+        } catch (XMPPException | IOException | ArrowheadException | SmackException | InterruptedException e) {
+            logger.error("Error initializing Aggregator!", e);
+            System.exit(-1);
+        }
         while (true) {
             try {
                 Thread.sleep(10000000);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
     }
 
-    public AggregatorTestTool() {
+    public AggregatorTestTool() throws XMPPException, IOException, ArrowheadException, SmackException, InterruptedException {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
@@ -115,37 +118,23 @@ public class AggregatorTestTool {
         }));
 
         flexOffers = new HashMap<String, Map<Integer, FlexOffer>>();
-        try {
-            /* Start the local HTTP server */
-            //            initHttpServer();
+        /* Start the local HTTP server */
+        //            initHttpServer();
 
-            /* Initialize XMPP connection */
-            initXmpp();
-            try {
-                initHttpServer();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        /* Initialize XMPP connection */
+        initXmpp();
 
-            if (ARROWHEAD_COMPLIANT) {
-                this.aggServiceManager = new AggServiceManager();
-                this.aggServiceManager.publishAggXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
-                this.aggServiceManager.publishAggHTTP((String) config.getUsername(), httpHostname, serverPort, httpPath);
-            }
+        initHttpServer();
 
-            /* Print a welcome message */
-            logger.info("Test tool started!");
-
-            //        } catch (IOException e) {
-            //            e.printStackTrace();
-        } catch (XMPPException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ArrowheadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if (ARROWHEAD_COMPLIANT) {
+            this.aggServiceManager = new AggServiceManager();
+            this.aggServiceManager.publishAggXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
+            this.aggServiceManager.publishAggHTTP((String) config.getUsername(), httpHostname, serverPort, httpPath);
         }
+
+        /* Print a welcome message */
+        logger.info("Test tool started!");
+
     }
 
     private void initHttpServer() throws IOException {
@@ -166,7 +155,7 @@ public class AggregatorTestTool {
         this.server.start();
     }
 
-    private void initXmpp() throws XMPPException {
+    private void initXmpp() throws XMPPException, SmackException, IOException, InterruptedException {
         /* Initializes XMPP connection */
         //          new JHades().overlappingJarsReport();
 
@@ -185,12 +174,8 @@ public class AggregatorTestTool {
         resourceManager.registerInstance(new XFlexOfferResource(this));
         //
         //        /* Start the XMPP server */
-        try {
-            hoxtManager = new HOXTWrapper(config, resourceManager);
-            hoxtManager.init(true);
-        } catch (SmackException | IOException | InterruptedException e1) {
-            e1.printStackTrace();
-        }
+        hoxtManager = new HOXTWrapper(config, resourceManager);
+        hoxtManager.init(true);
         xFOProvider = new XFlexOfferProviderClient(hoxtManager);
     }
 
@@ -239,9 +224,6 @@ public class AggregatorTestTool {
         if (flexOffer.getAssignmentBeforeInterval() != 0 && flexOffer.getAssignmentBeforeTime().before(now)) {
             throw new FlexOfferException("AssignmentBeforeTime is before now!");
         }
-        //        if (flexOffer.getAssignmentBeforeDurationIntervals() != 0 && flexOffer.getAssignmentBeforeDurationSeconds().before(now)) {
-        //            throw new FlexOfferException("AssignmentBeforeDurationTime is before now!");
-        //        }
 
         // TODO: remove this when the XML bind error has been fixed.
         if (flexOffer.getFlexOfferSchedule() != null && flexOffer.getFlexOfferSchedule().getEnergyAmounts() == null) {
@@ -259,9 +241,9 @@ public class AggregatorTestTool {
             flexOffers.put(ownerId, new HashMap<Integer, FlexOffer>());
         }
         Map<Integer, FlexOffer> current = flexOffers.get(ownerId);
-//        if (current.containsKey(flexOffer.getId())) {
-//            throw new FlexOfferException("FlexOffer already added! Can not overwrite FlexOffer!");
-//        }
+        //if (current.containsKey(flexOffer.getId())) {
+        //    throw new FlexOfferException("FlexOffer already added! Can not overwrite FlexOffer!");
+        //}
         current.put(flexOffer.getId(), flexOffer);
 
         Timer timer = new Timer();
@@ -275,7 +257,7 @@ public class AggregatorTestTool {
                     amounts[i] = flexOffer.getSlice(i).getEnergyLower() + 0.5 * (flexOffer.getSlice(i).getEnergyUpper() -
                             flexOffer.getSlice(i).getEnergyLower());
                 }
-                logger.info("Assign schedule!!!");
+                logger.info("Assign schedule!");
 
                 FlexOfferSchedule fos = new FlexOfferSchedule();
                 fos.setEnergyAmounts(amounts);
@@ -283,13 +265,12 @@ public class AggregatorTestTool {
                 flexOffer.setFlexOfferSchedule(fos);
 
                 if (!httpClients.contains(flexOffer.getOfferedById())) {
-                    logger.info("Send schedule!!!");
+                    logger.info("Send schedule!");
                     try {
                         xFOProvider.setSubscriberId(flexOffer.getOfferedById());
                         xFOProvider.createFlexOfferSchedule(flexOffer.getId(), flexOffer.getFlexOfferSchedule());
                     } catch (FlexOfferException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        logger.warn("Error when sending schedule! ", e);
                     }
                     logger.info("Done sending.");
                 }

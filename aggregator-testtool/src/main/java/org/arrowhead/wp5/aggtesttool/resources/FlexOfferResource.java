@@ -30,13 +30,6 @@ public class FlexOfferResource {
 
     }
 
-//    @GET
-//    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-//    public FlexOffer[] getFlexOffers()
-//            throws FlexOfferException {
-//        return this.agg.getAllSimpleFlexOffers().toArray(new FlexOffer[0]);
-//    }
-
     @Path("/{foaid}")
     @POST
     public Response createFlexOffer(@PathParam("foaid") String foaId, FlexOffer flexOffer)
