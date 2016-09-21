@@ -54,7 +54,7 @@ public class DnsSdHostname {
 			    System.setProperty("dnssd.hostname", "rh" + ip + ".test.bnearit.arrowhead.eu");
 			}
 		} else if (hostname == null || "".equals(hostname)) {
-			System.out.println("Hostname not set!");
+			logger.warn("Hostname not set!");
 		}
 	}
 

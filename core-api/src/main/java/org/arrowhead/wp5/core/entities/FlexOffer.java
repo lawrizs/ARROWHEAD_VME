@@ -508,39 +508,39 @@ public class FlexOffer implements Serializable, Cloneable {
 	 */
     public boolean isCorrect() {
         if (state == null) {
-            logger.debug("state is null.");
+            logger.info("state is null.");
             return false;
         }
         if (offeredById == null || "".equals(offeredById)) {
-            logger.debug("offeredById is null or empty.");
+            logger.info("offeredById is null or empty.");
             return false;
         }
         if (slices == null) {
-            logger.debug("slices is null.");
+            logger.info("slices is null.");
             return false;
         }
         if (defaultSchedule != null && !defaultSchedule.isCorrect(this)) {
-            logger.debug("defaultSchedule is not null but incorrect");
+            logger.info("defaultSchedule is not null but incorrect");
             return false;
         }
         if (flexOfferSchedule != null && !flexOfferSchedule.isCorrect(this)) {
-            logger.debug("flexOfferSchedule is not null but incorrect");
+            logger.info("flexOfferSchedule is not null but incorrect");
             return false;
         }
         if (startAfterInterval > startBeforeInterval) {
-            logger.debug("startAfterInterval is after startBeforeInterval");
+            logger.info("startAfterInterval is after startBeforeInterval");
             return false;
         }
         if (acceptanceBeforeInterval > startBeforeInterval) {
-            logger.debug("acceptanceBeforeInterval is after startBeforeInterval");
+            logger.info("acceptanceBeforeInterval is after startBeforeInterval");
             return false;
         }
         if (assignmentBeforeInterval > startBeforeInterval) {
-            logger.debug("assignmentBeforeInterval is after startBeforeInterval");
+            logger.info("assignmentBeforeInterval is after startBeforeInterval");
             return false;
         }
         if (assignmentBeforeDurationIntervals > startBeforeInterval) {
-            logger.debug("assignmentBeforeDurationIntervals is after startBeforeInterval");
+            logger.info("assignmentBeforeDurationIntervals is after startBeforeInterval");
             return false;
         }
 

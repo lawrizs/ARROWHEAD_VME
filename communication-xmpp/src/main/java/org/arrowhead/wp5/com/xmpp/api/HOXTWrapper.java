@@ -56,6 +56,8 @@ import org.jivesoftware.smackx.hoxt.provider.HttpOverXmppRespProvider;
 import org.jivesoftware.smackx.shim.packet.Header;
 import org.jivesoftware.smackx.shim.packet.HeadersExtension;
 import org.jxmpp.stringprep.XmppStringprepException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Object that enables sending and receiving HTTP requests, and answering to
@@ -65,6 +67,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
  *
  */
 public class HOXTWrapper {
+    private static final Logger logger = LoggerFactory.getLogger(HOXTWrapper.class);
 
     @SuppressWarnings("unused")
     private static final int packetReplyTimeout = 30000; // millis
@@ -163,8 +166,8 @@ public class HOXTWrapper {
     public void init(boolean initClient) throws XMPPException, SmackException,
             IOException, InterruptedException {
 
-        System.out.println(String.format("Initializing connection to server "
-                + conConfig.getServiceName()));
+        logger.info("Initializing connection to server {}",
+                conConfig.getServiceName());
         // + conConfig.getXMPPServiceDomain()));
 
         // SmackConfiguration.setDefaultPacketReplyTimeout(packetReplyTimeout);
@@ -176,7 +179,7 @@ public class HOXTWrapper {
         Roster.getInstanceFor(connection).setRosterLoadedAtLogin(false);
 
         connection.login();
-        System.out.println("Connected: " + connection.isConnected());
+        logger.info("Connected: {}", connection.isConnected());
 
         if (SmackConfiguration.DEBUG == true) {
             ServiceDiscoveryManager discoManager = ServiceDiscoveryManager
@@ -185,8 +188,8 @@ public class HOXTWrapper {
             DiscoverInfo discoInfo = discoManager.discoverInfo(this.connection
                     .getUser());
             // Check if room is HOXT is supported
-            System.out.println("Test hoxt supported: "
-                    + discoInfo.containsFeature("urn:xmpp:http"));
+            logger.info("Test hoxt supported: {}",
+                    discoInfo.containsFeature("urn:xmpp:http"));
         }
 
         if (resourceManager != null) {
@@ -239,7 +242,7 @@ public class HOXTWrapper {
             // request.setFrom(JidCreate.from(id));
             /* Need to set version otherwise NullPointerException */
             request.setVersion("1.1");
-            System.out.println(connection.getUser());
+            logger.info(connection.getUser());
             connection.sendStanza(request);
             synchronized (request) {
                 /** TODO set a time out */

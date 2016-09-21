@@ -47,17 +47,25 @@ public class AggServiceManager {
     private Set<ServiceInformation> sis;
 
     public AggServiceManager() {
-//		/*TODO in next version of Smack use getXmppServiceDomain*/
+        /*TODO in next version of Smack use getXmppServiceDomain*/
 
-//		DnsSdHostname.setHostname();
+        //DnsSdHostname.setHostname();
 
         sd = new ServiceDiscoveryDnsSD();
         sis = new HashSet<ServiceInformation>();
     }
 
-    public void publishXMPP(String username, String xmppHostname, int xmppPort, String resource) throws ArrowheadException {
+    public void publishMarketXMPP(String username, String xmppHostname, int xmppPort, String resource) throws ArrowheadException {
+        publishXMPP(username, xmppHostname, xmppPort, resource, ArrowheadConstants.MARKET_XMPP_TYPE);
+    }
+
+    public void publishAggXMPP(String username, String xmppHostname, int xmppPort, String resource) throws ArrowheadException {
+        publishXMPP(username, xmppHostname, xmppPort, resource, ArrowheadConstants.AGG_XMPP_TYPE);
+    }
+
+    private void publishXMPP(String username, String xmppHostname, int xmppPort, String resource, String xmppType) throws ArrowheadException {
         try {
-            for (ServiceIdentity si : sd.getServicesByType(ArrowheadConstants.AGG_XMPP_TYPE)) {
+            for (ServiceIdentity si : sd.getServicesByType(xmppType)) {
                 String[] s = si.getId().split("\\.");
                 if (s.length > 0 && username.equals(s[0])) {
                     logger.info("Service already registered, unregistering...");
@@ -65,14 +73,14 @@ public class AggServiceManager {
                 }
             }
 
-            String idd = sd.createServiceName(username, ArrowheadConstants.AGG_XMPP_TYPE);
+            String idd = sd.createServiceName(username, xmppType);
 
             ServiceMetadata metadata = new ServiceMetadata();
             metadata.put(ArrowheadConstants.JABBER_ID_NAME, username);// + "@" + xmppHostname);
             metadata.put(ArrowheadConstants.RESOURCE_NAME, resource);
 
             ServiceInformation si = new ServiceInformation(
-                    new ServiceIdentity(idd, ArrowheadConstants.AGG_XMPP_TYPE),
+                    new ServiceIdentity(idd, xmppType),
                     new TcpEndpoint(xmppHostname, xmppPort),
                     metadata);
 
@@ -84,9 +92,17 @@ public class AggServiceManager {
         }
     }
 
-    public void publishHTTP(String username, String httpHostname, int httpPort, String path) throws ArrowheadException {
+    public void publishMarketHTTP(String username, String httpHostname, int httpPort, String path) throws ArrowheadException {
+        publishHTTP(username, httpHostname, httpPort, path, ArrowheadConstants.MARKET_HTTP_TYPE);
+    }
+
+    public void publishAggHTTP(String username, String httpHostname, int httpPort, String path) throws ArrowheadException {
+        publishHTTP(username, httpHostname, httpPort, path, ArrowheadConstants.AGG_HTTP_TYPE);
+    }
+
+    private void publishHTTP(String username, String httpHostname, int httpPort, String path, String httpType) throws ArrowheadException {
         try {
-            for (ServiceIdentity si : sd.getServicesByType(ArrowheadConstants.AGG_HTTP_TYPE)) {
+            for (ServiceIdentity si : sd.getServicesByType(httpType)) {
                 String[] s = si.getId().split("\\.");
                 if (s.length > 0 && username.equals(s[0])) {
                     logger.info("Service already registered, unregistering...");
@@ -94,13 +110,13 @@ public class AggServiceManager {
                 }
             }
 
-            String idd = sd.createServiceName(username, ArrowheadConstants.AGG_HTTP_TYPE);
+            String idd = sd.createServiceName(username, httpType);
 
             ServiceMetadata metadata = new ServiceMetadata();
             metadata.put(ArrowheadConstants.PATH_NAME, path);// + "@" + xmppHostname);
 
             ServiceInformation si = new ServiceInformation(
-                    new ServiceIdentity(idd, ArrowheadConstants.AGG_HTTP_TYPE),
+                    new ServiceIdentity(idd, httpType),
                     new TcpEndpoint(httpHostname, httpPort),
                     metadata);
 
