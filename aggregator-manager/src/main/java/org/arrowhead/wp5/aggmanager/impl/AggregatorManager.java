@@ -470,9 +470,12 @@ public class AggregatorManager extends StandAloneApp implements
             }
 
             f.setSlices(sl.toArray(new FlexOfferSlice[] {}));
-            double perc = Math.random();
-            f.setTotalEnergyConstraint(new FlexOfferConstraint(totalMinE + (totalMaxE - totalMinE)*perc, 
-            		                                           totalMinE + (totalMaxE - totalMinE)*perc));
+            double perc = 0.5; // Math.random();
+            
+            if ( i % 2 == 0){
+	            f.setTotalEnergyConstraint(new FlexOfferConstraint(totalMinE + (totalMaxE - totalMinE)*perc, 
+	            		                                           totalMinE + (totalMaxE - totalMinE)*perc));
+            }
 
             // f.setDefaultSchedule(new FlexOfferSchedule(f)); /* Set default schedule */
 
