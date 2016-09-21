@@ -31,10 +31,12 @@ import org.arrowhead.wp5.core.entities.FlexOffer;
 import org.arrowhead.wp5.core.entities.FlexOfferSlice;
 
 public class AmountFlexOptimizer {
-    private FlexOfferPortfolio fp = null;
+	private AggregatorOptimization opt;
+    private FlexOfferPortfolio fp;
     
-    public AmountFlexOptimizer(FlexOfferPortfolio fp) {
-    	this.fp = fp;
+    public AmountFlexOptimizer(AggregatorOptimization opt) {
+    	this.opt = opt;
+    	this.fp = opt.getFlexOfferPortfolio();
     }    
     
     private double getEnergyValue(int fid, int sliceId) {
@@ -111,7 +113,7 @@ public class AmountFlexOptimizer {
     protected void optimizeAmount(int fid, int sliceId) {
     	double step = 1e3;
     	double value = this.getEnergyValue(fid, sliceId);
-    	double fitness = this.fp.computePortfolioCost();
+    	double fitness = this.opt.getFitnessValue(); // this.fp.computePortfolioCost();
         boolean forward = true;
         
     	// Optimize a specific energy value
@@ -121,7 +123,7 @@ public class AmountFlexOptimizer {
 	    		double newVal = value + (forward ? 1.0 : -1.0) * step;
 	    		this.setEnergyValue(fid, sliceId, newVal);
 	    		this.fixEnergyValue(fid, sliceId); // Try to fix the amount value
-	    		double newfitness = this.fp.computePortfolioCost();
+	    		double newfitness = this.opt.getFitnessValue(); // this.fp.computePortfolioCost();
 	    		
 	    		if (newfitness < fitness) {
 	    			value = this.getEnergyValue(fid, sliceId);

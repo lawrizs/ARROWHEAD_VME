@@ -62,16 +62,16 @@ public class MyFlexibleResource implements FlexOfferUpdateListener {
     private String id = "request-it";
 
     /** The id of the aggregator found by using Arrowhead service discovery **/
-    private String aggId = "aggregator-test-tool";
+    private String aggId = "aggregator";
 
     /** The password used to connect to the XMPP server */
-    private String password = "XXXXX";
+    private String password = "wrong";
     /** XMPP Server Host */
-    private String xmppServer = "XXXXX.dpt.cs.aau.dk";
+    private String xmppServer = "delling.dpt.cs.aau.dk";
     /** XMPP Server Port */
     private int xmppPort = 5222;
     /** XMPP Service */
-    private String xmppService = "XXXXX";
+    private String xmppService = "delling";
     /** XMPP resource */
     private String xmppResource = "demo";
     /** The object that encapsulates HTTP over XMPP functionalities */
@@ -88,7 +88,7 @@ public class MyFlexibleResource implements FlexOfferUpdateListener {
 
     public MyFlexibleResource() {
         this.agent = new FlexOfferAgent(id, this);
-        this.foServiceManager = new ArrowheadXMPPServiceManager("alpha.jks", "XXXXX", "alpha.jks", "XXXXX");
+        this.foServiceManager = new ArrowheadXMPPServiceManager("alpha.jks", "abc1234", "alpha.jks", "XXXXX");
         this.flexDER = new MyDER(this.agent);
     }
 

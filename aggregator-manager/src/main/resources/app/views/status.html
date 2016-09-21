@@ -24,6 +24,21 @@
   #L%
   -->
 <tabset> 
+ 	<tab heading="Aggregator objective">
+	    <form name="objForm">
+	      <h2>Please choose the scheduling objective for this Aggregator:</h2>
+		  <label><input type="radio" ng-model="obj.value" value="objLowestCost">Minimize Total Costs (default)</label><br/>
+		  <label><input type="radio" ng-model="obj.value" value="objEnergyBalance">Demand and Supply Balancing</label><br/>
+		  <label><input type="radio" ng-model="obj.value" value="objEnergyMinFlat">Flat-Low Energy Loads</label><br/>
+		  <label><input type="radio" ng-model="obj.value" value="objEnergyMaxFlat">Flat-High Energy Loads</label><br/>
+		  <label><input type="radio" ng-model="obj.value" value="objEnergyMinNow">Low Energy Loads Now!</label><br/>
+		  <label><input type="radio" ng-model="obj.value" value="objEnergyMaxNow">High Energy Loads Now!</label><br/>
+		  <label><input type="radio" ng-model="obj.value" value="objManual">Manual Scheduling</label><br/>
+		    <button type="submit" class="btn btn-success" ng-click="updateObjective()">  
+						<span class="glyphicon glyphicon-check"></span>Update Objective
+			</button>
+		</form>
+    </tab>
     <tab heading="Simple FlexOffers">
 	    <agg-visual ng-model = "simpleFOs" />
     </tab>

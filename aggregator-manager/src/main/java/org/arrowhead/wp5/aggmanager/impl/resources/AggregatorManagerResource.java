@@ -38,6 +38,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.arrowhead.wp5.agg.api.FOAggParameters;
+import org.arrowhead.wp5.agg.optim.FlexOfferPortfolio;
+import org.arrowhead.wp5.agg.optim.OptimizationObjective;
 import org.arrowhead.wp5.aggmanager.impl.AggregatorManager;
 import org.arrowhead.wp5.aggmanager.impl.resources.entities.FlexOfferAggregatorStats;
 import org.arrowhead.wp5.application.entities.BooleanWrapper;
@@ -88,6 +90,27 @@ public class AggregatorManagerResource {
 //		this.man.setConDetails(xmppParams);
 	}
 	
+	/* Aggregator objective */
+	@GET
+	@Path("/objective")
+	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public OptimizationObjective getAggObjective()
+	{
+		return this.man.getAggregator().getObjective();
+	}
+	
+	@POST
+	@Path("/objective")
+	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public void setAggObjective(OptimizationObjective obj) {
+		this.man.getAggregator().setObjective(obj);
+	}
+	
+	@POST
+	@Path("/randomSchedule")
+	public void setRandomSchedule() {
+		this.man.getAggregator().setObjective(OptimizationObjective.objManual);
+	}
 	
 	/* Aggregation parameters */
 	@GET
@@ -138,6 +161,14 @@ public class AggregatorManagerResource {
 				break;
 			}
 		}
+		
+		/* Compute prices/costs */
+		FlexOfferPortfolio port = this.man.getAggregator().getFlexOfferPortfolio();
+		stats.setFixedCosts(port.getFixedExpences());
+		stats.setFlexOfferScheduleExpences(port.computeFlexOfferScheduleExpences());		
+		stats.setMarketGains(port.computeMarketGains());
+		stats.setMarketImbalanceCosts(port.computeMarketImbalanceCosts());
+		stats.setPortfolioTotalCost(port.computePortfolioCost());
 
 		return stats;
 	}

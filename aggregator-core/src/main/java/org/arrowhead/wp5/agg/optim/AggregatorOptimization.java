@@ -41,31 +41,69 @@ import org.arrowhead.wp5.core.entities.TimeSeries;
 
 public class AggregatorOptimization {
 	private FlexOfferPortfolio fp;
+	private OptimizationObjective obj;
 	
-	public AggregatorOptimization(FlexOfferPortfolio fp) {
+	public AggregatorOptimization(FlexOfferPortfolio fp, OptimizationObjective obj) {
 		this.fp = fp;
+		this.obj = obj;
 	}
 	
-	
-	public void optimizePortfolio() throws Exception {		
-		this.fp.setSchedulesToBaseline();
+	public FlexOfferPortfolio getFlexOfferPortfolio() {
+		return this.fp;
+	}
 		
-		/* No market commitments, no optimization is needed*/
-		if (this.fp.getMarketCommitments() == null || this.fp.getMarketCommitments().isEmpty()) {
-			return;
+	public void optimizePortfolio() throws Exception {	
+		
+		if (obj == OptimizationObjective.objLowestCost) {
+			this.fp.setSchedulesToBaseline();
+			
+			/* No market commitments, no optimization is needed*/
+			if (this.fp.getMarketCommitments() == null || this.fp.getMarketCommitments().isEmpty()) {
+				return;
+			}
 		}
 		
-		// STEP 1: Solve time scheduling problem (black-box) first 
-		
-		// Initialize the time flexibility scheduling
-		TimeFlexOptimizer tsOpt = new TimeFlexOptimizer(this.fp);		
-		tsOpt.optimizeTimeFlex();
-		
-		/* STEP 2: Solve the swarm ops problem */
-		AmountFlexOptimizer apOpt = new AmountFlexOptimizer(this.fp);
-		apOpt.optimizeAmounts();
+		switch (this.obj) {
+			case objEnergyBalance:
+			case objLowestCost:
+			case objEnergyMaxNow:
+			case objEnergyMinNow:
+				// STEP 1: Solve time scheduling problem (black-box) first		
+				// Initialize the time flexibility scheduling
+				TimeFlexOptimizer tsOpt = new TimeFlexOptimizer(this);		
+				tsOpt.optimizeTimeFlex();
 			
+			case objEnergyMaxFlat:
+			case objEnergyMinFlat:				
+				
+				/* STEP 2: Solve the swarm ops problem */
+				AmountFlexOptimizer apOpt = new AmountFlexOptimizer(this);
+				apOpt.optimizeAmounts();
+				break;
+			default: {}
+		}
 	}
+	
+	/* Get a fitness value of the portfolio for different objective targets */
+	protected double getFitnessValue() {
+		switch(this.obj) {
+			case objLowestCost: 
+				return this.fp.computePortfolioCost();
+			case objEnergyBalance:
+				return this.fp.computeEnergyImbalance();
+			case objEnergyMinFlat:
+				return this.fp.computeTotalEnergy();
+			case objEnergyMaxFlat:				
+				return -this.fp.computeTotalEnergy();
+			case objEnergyMinNow:
+				return this.fp.computeTotalEnergy(FlexOffer.toFlexOfferTime(new Date()) + 1);
+			case objEnergyMaxNow:
+				return -this.fp.computeTotalEnergy(FlexOffer.toFlexOfferTime(new Date()) + 1);				
+			default: 
+				return 0;
+		}
+	}
+	
 	
 	public BidV2 generate_maketV2_bid(long timeFrom, long timeTo) throws Exception {
 		// BidV2 bid = new BidV2();

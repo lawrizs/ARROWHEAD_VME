@@ -23,9 +23,35 @@
   THE SOFTWARE.
   #L%
   -->
-<h2>Aggregator {{id.value === null ? "" : (id.value)}}</h2>
+<h2><b>Aggregator:</b> {{id.value === null ? "" : (id.value)}}</h2>
 
 <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-2"> 
+			<table class="table table-striped table-bordered">
+				<tr>
+					<td>Total aggregator portfolio cost:</td>
+					<td><b>{{stats.portfolioCost | currency:""}} DKK</b></td>
+				</tr>
+				<tr>
+					<td>Fixed costs:</td> 
+					<td>{{stats.fixedCosts | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>Direct flex-offer schedule costs:</td> 
+					<td>{{stats.flexOfferScheduleExpences | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>Direct market gains:</td>
+					<td>{{-stats.marketGains | currency:""}} DKK</td>
+				</tr>
+				<tr>
+					<td>Market imbalance fees:</td>
+					<td>{{stats.marketImbalanceCosts | currency:""}} DKK</td>
+				</tr>												 
+			</table>
+		</div>
+	</div>
 	<div class="row">
 		<div class="col-md-6">
 			<table class="table table-striped table-bordered">

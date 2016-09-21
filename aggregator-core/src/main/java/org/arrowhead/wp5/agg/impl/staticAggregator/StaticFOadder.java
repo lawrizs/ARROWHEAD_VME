@@ -738,6 +738,7 @@ public class StaticFOadder implements IFlexOfferNto1Adder {
 		/* Added 2016-09-21 */
 		List<FlexOffer> fos = Arrays.asList(aggFo.getSubFlexOffers());
 		
+		/* Total constraint treatment */
 		DisaggregationHelper.enforceTotalEnergyConstraint(fos);
 		
 		return fos;

@@ -31,7 +31,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class TimeFlexOptimizer {
-	private FlexOfferPortfolio fp = null;
+	private AggregatorOptimization opt;
+	private FlexOfferPortfolio fp;
 	private Random r = new Random();
 	
 	/* Simulate Annealing parameters */
@@ -41,8 +42,9 @@ public class TimeFlexOptimizer {
 	private final double BOLTZMANN_CONSTANT = 1.0;
 	private final double TEMP_FACTOR =        0.5;
 	
-	public TimeFlexOptimizer(FlexOfferPortfolio fp){
-		this.fp = fp;
+	public TimeFlexOptimizer(AggregatorOptimization opt){
+		this.opt = opt;
+		this.fp = opt.getFlexOfferPortfolio();
 	}
 	
 	private long [] getCurrentState() {
@@ -79,7 +81,7 @@ public class TimeFlexOptimizer {
 	
 	private double getFitnessValue(long [] state) {
 		this.setCurrentState(state);
-		return this.fp.computePortfolioCost();
+		return this.opt.getFitnessValue(); // .fp.computePortfolioCost();
 	}
 	
 	private long [] simAnneal(FlexOfferPortfolio fp){
@@ -130,7 +132,7 @@ public class TimeFlexOptimizer {
 	/* This method implements Simulated Annealing for time flexibility optimization */
 	public void optimizeTimeFlex() {			
 		long [] startState = this.getCurrentState();
-		double fitnessValue = this.fp.computePortfolioCost();		
+		double fitnessValue = this.opt.getFitnessValue(); // this.fp.computePortfolioCost();		
 		this.setCurrentState(this.simAnneal(fp));	
 		
 		if (this.fp.computePortfolioCost() > fitnessValue) {

@@ -75,9 +75,14 @@ public class DisaggregationHelper {
 					
 					if (j == i || sI[j].getTsBoundState() == TimeStepState.tsProfileOutOfRange) { continue; }
 					
-					double deallocValue = deallocateEnergy(fos.get(j),(int) sI[i].getRunningIntervalNr(), -deltaEn);
+					double energy = f.getFlexOfferSchedule().getEnergyAmounts()[sliceNr];
 					
-					f.getFlexOfferSchedule().getEnergyAmounts()[sliceNr] = f.getFlexOfferSchedule().getEnergyAmounts()[sliceNr] - deallocValue;
+					double deltaEnTs = Math.min(f.getSlice(sliceNr).getEnergyUpper() - energy, 
+							           Math.max(f.getSlice(sliceNr).getEnergyLower() - energy, deltaEn));					
+					
+					double deallocValue = deallocateEnergy(fos.get(j),(int) sI[i].getRunningIntervalNr(), -deltaEnTs);
+					
+					f.getFlexOfferSchedule().getEnergyAmounts()[sliceNr] = energy - deallocValue;
 					
 					deltaEn+=deallocValue;					
 				}

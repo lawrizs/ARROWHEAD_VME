@@ -33,8 +33,9 @@ angular.module('foaManApp')
 	factory.rootUrl = "http://localhost:9998/";
 	factory.consoleUrl = 'ws://localhost:9998/console';
 	
-	factory.Connection = $resource(factory.rootUrl + 'api/manager/connection');
+	factory.Connection = $resource(factory.rootUrl + 'api/manager/connection'); 
 	factory.Id = $resource(factory.rootUrl + 'api/manager/id');
+	factory.Objective = $resource(factory.rootUrl + 'api/manager/objective');
 	factory.AggParams = $resource(factory.rootUrl + 'api/manager/aggparams');
 	factory.XmppParams = $resource(factory.rootUrl + 'api/manager/xmppparams');
 	factory.AnalyticsParams = $resource(factory.rootUrl + 'api/analytics/settings');
@@ -54,7 +55,7 @@ angular.module('foaManApp')
 	factory.GenerateBidV2 = $resource(factory.rootUrl + 'api/vmarket/generateBidV2');
 	/* factory.GenerateBidSchedule = $resource(factory.rootUrl + 'api/vmarket/bidSchedule'); */
 	factory.SendMarketBid = $resource(factory.rootUrl + 'api/vmarket/sendMarketBid');
-	factory.TriggerRandomAssignments = $resource(factory.rootUrl + 'api/schedule', {},  {   'save':   {method:'POST'}  });
+	factory.TriggerRandomAssignments = $resource(factory.rootUrl + 'api/manager/randomSchedule', {},  {   'save':   {method:'POST'}  });
 	
 	return factory;
 });

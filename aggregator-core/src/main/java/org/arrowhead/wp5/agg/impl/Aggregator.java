@@ -58,6 +58,7 @@ import org.arrowhead.wp5.agg.impl.billing.MarketContract;
 import org.arrowhead.wp5.agg.impl.foaggregation.FOAggregation;
 import org.arrowhead.wp5.agg.optim.AggregatorOptimization;
 import org.arrowhead.wp5.agg.optim.FlexOfferPortfolio;
+import org.arrowhead.wp5.agg.optim.OptimizationObjective;
 import org.arrowhead.wp5.core.entities.AggregatedFlexOffer;
 import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.FlexOffer;
@@ -98,7 +99,9 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 	private AggregatorContract defaultContract;
 	private MarketContract defaultMarketContract;
 
-	private FOAggParameters aggParameters = new FOAggParameters();
+	/* Aggregator's optimization target and parameters */	
+	private OptimizationObjective objective = OptimizationObjective.objLowestCost;
+	private FOAggParameters aggParameters = new FOAggParameters();	
 	private FlexOfferUpdateListener foLst;
 
 	/* All market bids */
@@ -106,6 +109,10 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 
 	public Aggregator(String id, FlexOfferUpdateListener foLst) {
 		this.id = id;
+		
+		/* Initialize the aggregator's objective */
+		this.objective = OptimizationObjective.objLowestCost;
+		
 		/* Initialize the dafault contract */
 		this.defaultContract = new AggregatorContract();
 		this.defaultContract.setFixedReward(10.00 /* DKK */); /* 10DKK if the DER owner is flexible */
@@ -157,6 +164,18 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 
 	public String getId() {
 		return this.id;
+	}
+	
+	
+
+	public OptimizationObjective getObjective() {
+		return objective;
+	}
+
+
+	public void setObjective(OptimizationObjective obj) {
+		this.objective = obj;
+		this.delayedPlanning();
 	}
 	
 
@@ -373,14 +392,30 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 		}
 	}
 	
+
+	private double computeFixedCosts() {
+		double value = 0;
+		
+		for (String customer : getActiveCustomers()) {
+			AggregatorBill bill = this.getCustomerBill(customer);
+			
+			value += bill.getRewardFixed() + bill.getRewardTotalEnergyFlex() + bill.getRewardTotalTimeFlex(); //  + bill.getRewardTotalSchedFixed();			
+		}
+		return value;
+	}
+	
+	public FlexOfferPortfolio getFlexOfferPortfolio() {
+		return new FlexOfferPortfolio(this, aggFlexOffers.values(), this.market_commitments, this.computeFixedCosts());
+	}
+	
 	public void runPlanning() {
 		/* Aggregate flex-offers */
 		aggregateFlexOffers();				
 				
 		/* Run planning */
 		//  Collections.nCopies(aggFlexOffers.size(), this.defaultMarketContract)
-		FlexOfferPortfolio fp = new FlexOfferPortfolio(this, aggFlexOffers.values(), this.market_commitments);
-		AggregatorOptimization opt = new AggregatorOptimization(fp);
+		FlexOfferPortfolio fp = this.getFlexOfferPortfolio();
+		AggregatorOptimization opt = new AggregatorOptimization(fp, this.objective);
 		try {
 			opt.optimizePortfolio();
 		} catch (Exception e) {		
@@ -483,17 +518,24 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 			/* Compute aggregated contract */
 			AggregatorContract ac = new AggregatorContract();
 			
-			for (int i=0; i<((AggregatedFlexOffer)f).getSubFlexOffers().length; i++) {
+			int numSubFos = ((AggregatedFlexOffer)f).getSubFlexOffers().length;
+			
+			for (int i=0; i < numSubFos; i++) {
 				AggregatorContract fc = getFlexOfferContract(((AggregatedFlexOffer)f).getSubFlexOffers()[i]);
 				
 				ac.setFixedReward(ac.getFixedReward() + fc.getFixedReward());
 				ac.setSchedulingFixedReward(ac.getSchedulingFixedReward() + fc.getSchedulingFixedReward());
+				ac.setTimeFlexReward(ac.getTimeFlexReward() + fc.getTimeFlexReward());				
+				ac.setSchedulingStartTimeReward(ac.getSchedulingStartTimeReward() + fc.getSchedulingStartTimeReward());
 				/* Conservativelly aggregate rawards */ 
-				ac.setTimeFlexReward(Math.max(ac.getTimeFlexReward(), fc.getTimeFlexReward()));
 				ac.setEnergyFlexReward(Math.max(ac.getEnergyFlexReward(), fc.getEnergyFlexReward()));				
-				ac.setSchedulingStartTimeReward(Math.max(ac.getSchedulingStartTimeReward(), fc.getSchedulingStartTimeReward()));
 				ac.setSchedulingEnergyReward(Math.max(ac.getSchedulingEnergyReward(), fc.getSchedulingEnergyReward()));				
 			}
+			
+// 			ac.setTimeFlexReward(ac.getTimeFlexReward() * numSubFos);
+//			ac.setEnergyFlexReward(ac.getEnergyFlexReward() * numSubFos);
+//			ac.setSchedulingStartTimeReward(ac.getSchedulingStartTimeReward() * numSubFos);
+//			ac.setSchedulingEnergyReward(ac.getSchedulingEnergyReward() * numSubFos);
 			
 			return ac;			
 		} else { 
@@ -556,8 +598,9 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 	
 	
 	public BidV2 generate_maketV2_bid(long timeFrom, long timeTo) {
-		FlexOfferPortfolio fp = new FlexOfferPortfolio(this, aggFlexOffers.values(), this.market_commitments);
-		AggregatorOptimization opt = new AggregatorOptimization(fp);
+		FlexOfferPortfolio fp = new FlexOfferPortfolio(this, aggFlexOffers.values(), this.market_commitments, this.computeFixedCosts());
+		/* Always optimize costs when generating bids */
+		AggregatorOptimization opt = new AggregatorOptimization(fp, OptimizationObjective.objLowestCost); 
 		try {
 			BidV2 bid = opt.generate_maketV2_bid(timeFrom, timeTo);
 			bid.setId(this.getId());

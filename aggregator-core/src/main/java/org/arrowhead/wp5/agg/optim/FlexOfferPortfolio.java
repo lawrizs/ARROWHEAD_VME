@@ -29,6 +29,7 @@ package org.arrowhead.wp5.agg.optim;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.arrowhead.wp5.agg.impl.Aggregator;
@@ -53,17 +54,20 @@ public class FlexOfferPortfolio {
 	private Aggregator agg;
 	final static Logger logger = LoggerFactory.getLogger(FlexOfferPortfolio.class);
 	
-	/* FlexOffer expenses */
+	/* FlexOffer expenses */	
 	private List<FlexOffer> fos;
 	private List<AggregatorContract> fo_contracts;
+	/* Fixed expences that do not depend on FO schedules */
+	private double fixedExpences = 0;
 	
 	/* FlexOffer gains */
 	private List<MarketCommitment> mk_commit;
 	
-	public FlexOfferPortfolio(Aggregator agg, Collection<? extends FlexOffer> fos, Collection<MarketCommitment> mk_commit) {
+	public FlexOfferPortfolio(Aggregator agg, Collection<? extends FlexOffer> fos, Collection<MarketCommitment> mk_commit, double fixedCosts) {
 		this.agg = agg;
 		this.fos = new ArrayList<FlexOffer>();
 		this.fo_contracts = new ArrayList<AggregatorContract>();
+		this.fixedExpences = fixedCosts;
 		
 		/* Flex-offer expences */
 		for(FlexOffer f : fos) {			
@@ -196,16 +200,64 @@ public class FlexOfferPortfolio {
 		return value;
 	}
 		
-	/* Compute schedule cost */
-	public double computePortfolioCost(){
+	
+	/* Compute direct flex-offer schedule expences */
+	public double computeFlexOfferScheduleExpences() {
 		double value = 0;
-		
-		/* Flex-offer expenses */
 		for(int i=0; i < this.fos.size(); i++) {
-			value += AggregatorBillFactory.getFlexOfferExpectedValue(this.fo_contracts.get(i), this.fos.get(i));			
+			value += AggregatorBillFactory.getFlexOfferSchedulingCost(this.fo_contracts.get(i), this.fos.get(i));			
+		}
+		return value;
+	}
+	
+	/* Compute market gains */
+	public double computeMarketGains() {
+		double value=0; 
+		
+		for (MarketCommitment mc : this.mk_commit) {
+			for (int k=0; k<mc.getWinning_bid().getNumSlices(); k++) {
+			  	value -= mc.getWinning_bid().getWinPrices()[k];
+			}
 		}
 		
-		/* Flex-offer gains */
+		return value; 
+	}
+	
+	/* Compute market imbalance costs */
+	public double computeMarketImbalanceCosts() {
+		double value = 0;
+		
+		for (MarketCommitment mc : this.mk_commit) {
+			for (int k=0; k<mc.getWinning_bid().getNumSlices(); k++) {
+				long tid = mc.getWinning_bid().getBidFlexOffer().getStartAfterInterval() + k;				
+				
+				double energyAtTid = 0;
+				
+				for(int i=0; i<this.fos.size(); i++){
+					FlexOfferSchedule sch = this.fos.get(i).getFlexOfferSchedule();
+					
+					if (sch == null) continue;
+										
+					if (tid < sch.getStartInterval()) { continue; }
+					if (tid > sch.getStartInterval() + sch.getEnergyAmounts().length - 1) { continue; }
+						
+					energyAtTid += sch.getEnergyAmount((int) (tid - sch.getStartInterval()));
+				}
+				
+				value += Math.abs(mc.getWinning_bid().getWinQuantities()[k] - energyAtTid) * mc.getContract().getImbalanceFee();
+			}
+		}
+		return value;		
+	}
+	
+	/* Compute the schedule cost */
+	public double computePortfolioCost(){
+		double value = this.fixedExpences;
+		
+		/* Flex-offer expenses */
+		value += this.computeFlexOfferScheduleExpences();
+		
+		/* Market gains */
 		for (MarketCommitment mc : this.mk_commit) {
 			for (int k=0; k<mc.getWinning_bid().getNumSlices(); k++) {
 				long tid = mc.getWinning_bid().getBidFlexOffer().getStartAfterInterval() + k;				
@@ -233,6 +285,89 @@ public class FlexOfferPortfolio {
 		}
 		
 		return value;
+	}
+
+	/* Compute the scheudule imbalances*/
+	static Hashtable<Long, Double> tid_tbl = new Hashtable<Long, Double>();
+	
+	private void fillTidTableWithScheduleValues() {
+		tid_tbl.clear();
+		for (int i=0; i < this.fos.size(); i++) {
+			FlexOffer f = this.fos.get(i);
+			FlexOfferSchedule sch = f.getFlexOfferSchedule();
+			
+			if (sch == null) continue;
+			
+			for(int j=0; j<sch.getEnergyAmounts().length; j++) {
+				long tid = sch.getStartInterval() + j;
+								
+				if (!tid_tbl.containsKey(tid))  { 
+					tid_tbl.put(tid, sch.getEnergyAmount(j)); 
+				} else {
+					tid_tbl.replace(tid, sch.getEnergyAmount(j) + tid_tbl.get(tid));	
+				}				
+			}						
+		}	
+	}
+	
+	public double computeEnergyImbalance() {
+		this.fillTidTableWithScheduleValues();
+		
+		double imbalance = 0;
+		for(Double value : tid_tbl.values()) {
+			imbalance += Math.abs(value);
+		}
+		
+		return imbalance; 
+	}
+	
+	public double computeTotalEnergy() {
+		double totalEnergy = 0;
+		for (int i=0; i < this.fos.size(); i++) {
+			FlexOffer f = this.fos.get(i);
+			FlexOfferSchedule sch = f.getFlexOfferSchedule();
+			
+			if (sch == null) continue;
+			
+			for(int j=0; j<sch.getEnergyAmounts().length; j++) {
+				totalEnergy += sch.getEnergyAmount(j);
+			}
+		}
+		
+		return totalEnergy;
+	}
+	
+	 /**
+	  * Compute the total energy at specific tid 
+	  * @param tid
+	  * @return
+	  */
+	public double computeTotalEnergy(long tid) {
+		double totalEnergy = 0;
+		for (int i=0; i < this.fos.size(); i++) {
+			FlexOffer f = this.fos.get(i);
+			FlexOfferSchedule sch = f.getFlexOfferSchedule();
+			
+			if (sch == null) continue;
+			
+			for(int j=0; j<sch.getEnergyAmounts().length; j++) {
+				long t = sch.getStartInterval() + j;
+				
+				if (t == tid) {
+					totalEnergy += sch.getEnergyAmount(j);
+				}
+			}			
+		}
+		
+		return totalEnergy;
+	}
+
+	public double getFixedExpences() {
+		return fixedExpences;
+	}
+
+	public void setFixedExpences(double fixedExpences) {
+		this.fixedExpences = fixedExpences;
 	}
 	
 }

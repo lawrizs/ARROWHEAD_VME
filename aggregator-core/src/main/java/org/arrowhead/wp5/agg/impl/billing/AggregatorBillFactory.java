@@ -46,6 +46,7 @@ public class AggregatorBillFactory {
 	public static boolean isExecutedCorrectly(FlexOffer fo) {
 		return true; // @TODO: make a proper flexoffer execution validation 
 	}
+
 	
 	/* This calculates the expected value of a given flexoffer */
 	public static double getFlexOfferExpectedValue(AggregatorContract contract, FlexOffer f) {
@@ -57,6 +58,14 @@ public class AggregatorBillFactory {
 		for(FlexOfferSlice s : f.getSlices()) {
 			value += contract.getEnergyFlexReward() * (s.getEnergyUpper() - s.getEnergyLower());
 		}
+		
+		value += getFlexOfferSchedulingCost(contract, f);			
+		
+		return value;
+	}
+	
+	public static double getFlexOfferSchedulingCost(AggregatorContract contract, FlexOffer f) {
+		double value = 0;
 		
 		/* Add scheduling part */
 		if ((f.getDefaultSchedule() != null) && (f.getFlexOfferSchedule() != null) &&
@@ -87,8 +96,7 @@ public class AggregatorBillFactory {
 																			 f.getDefaultSchedule().getEnergyAmount(i));
 				}				
 			}
-		}			
-		
+		}
 		return value;
 	}
  

@@ -51,102 +51,155 @@ public class FlexOfferAggregatorStats implements Serializable {
 	int numAssigned = 0;
 	int numExecuted = 0;
 	int	numRejected = 0;
-
-	public int getNumInitial() {
-		return numInitial;
-	}
-
-	public void setNumInitial(int numInitial) {
-		this.numInitial = numInitial;
-	}
-
-	public void incNumInitial(int numInitial) {
-		this.numInitial += numInitial;
-	}
-
-	public int getNumOffered() {
-		return numOffered;
-	}
-
-	public void setNumOffered(int numOffered) {
-		this.numOffered = numOffered;
-	}
 	
-	public void incNumOffered(int numOffered) {
-		this.numOffered += numOffered;
+	private double flexOfferScheduleExpences;
+	private double marketGains;
+	private double marketImbalanceCosts;
+	private double fixedCosts;
+	private double portfolioCost;
+
+	public double getFlexOfferScheduleExpences() {
+		return flexOfferScheduleExpences;
+	}
+
+	public double getMarketGains() {
+		return marketGains;
+	}
+
+	public double getMarketImbalanceCosts() {
+		return marketImbalanceCosts;
 	}
 
 	public int getNumAccepted() {
 		return numAccepted;
 	}
 
-	public void setNumAccepted(int numAccepted) {
-		this.numAccepted = numAccepted;
+	public int getNumAggFOs() {
+		return numAggFOs;
 	}
 	
-	public void incNumAccepted(int numAccepted) {
-		this.numAccepted += numAccepted;
-	}
-
 	public int getNumAssigned() {
 		return numAssigned;
-	}
-
-	public void setNumAssigned(int numAssigned) {
-		this.numAssigned = numAssigned;
-	}
-	
-	public void incNumAssigned(int numAssigned) {
-		this.numAssigned += numAssigned;
 	}
 
 	public int getNumExecuted() {
 		return numExecuted;
 	}
 
-	public void setNumExecuted(int nunExecuted) {
-		this.numExecuted = nunExecuted;
+	public int getNumInitial() {
+		return numInitial;
 	}
 	
-	public void incNumExecuted(int nunExecuted) {
-		this.numExecuted += nunExecuted;
+	public int getNumOffered() {
+		return numOffered;
 	}
 
 	public int getNumRejected() {
 		return numRejected;
 	}
 
-	public void setNumRejected(int numRejected) {
-		this.numRejected = numRejected;
+	public int getNumSimpleFOs() {
+		return numSimpleFOs;
 	}
 	
+	public double getPortfolioCost() {
+		return portfolioCost;
+	}
+
+	public void incNumAccepted(int numAccepted) {
+		this.numAccepted += numAccepted;
+	}
+
+	public void incNumAggFOs(int numSendFlexOffers) {
+		this.numAggFOs += numSendFlexOffers;
+	}
+	
+	public void incNumAssigned(int numAssigned) {
+		this.numAssigned += numAssigned;
+	}
+
+	public void incNumExecuted(int nunExecuted) {
+		this.numExecuted += nunExecuted;
+	}
+
+	public void incNumInitial(int numInitial) {
+		this.numInitial += numInitial;
+	}
+	
+	public void incNumOffered(int numOffered) {
+		this.numOffered += numOffered;
+	}
+
 	public void incNumRejected(int numRejected) {
 		this.numRejected += numRejected;
 	}
 
-	public int getNumSimpleFOs() {
-		return numSimpleFOs;
-	}
-
-	public void setNumSimpleFOs(int numGeneratedFOs) {
-		this.numSimpleFOs = numGeneratedFOs;
-	}
-	
 	public void incNumSimpleFOs(int numGeneratedFOs)
 	{
 		this.numSimpleFOs += numGeneratedFOs;
 	}
+	
+	public void setFlexOfferScheduleExpences(double flexOfferExpences) {
+		this.flexOfferScheduleExpences = flexOfferExpences;		
+	}
 
-	public int getNumAggFOs() {
-		return numAggFOs;
+	public void setMarketGains(double marketGains) {
+		this.marketGains = marketGains;
+	}
+
+	public void setMarketImbalanceCosts(double marketImbalanceCosts) {
+		this.marketImbalanceCosts = marketImbalanceCosts;		
+	}
+	
+	public void setNumAccepted(int numAccepted) {
+		this.numAccepted = numAccepted;
 	}
 
 	public void setNumAggFOs(int numSendFlexOffers) {
 		this.numAggFOs = numSendFlexOffers;
 	}
-	
-	public void incNumAggFOs(int numSendFlexOffers) {
-		this.numAggFOs += numSendFlexOffers;
+
+	public void setNumAssigned(int numAssigned) {
+		this.numAssigned = numAssigned;
 	}
 
+	public void setNumExecuted(int nunExecuted) {
+		this.numExecuted = nunExecuted;
+	}
+
+	public void setNumInitial(int numInitial) {
+		this.numInitial = numInitial;
+	}
+
+	public void setNumOffered(int numOffered) {
+		this.numOffered = numOffered;
+	}
+
+
+	public void setNumRejected(int numRejected) {
+		this.numRejected = numRejected;
+	}
+
+	public void setNumSimpleFOs(int numGeneratedFOs) {
+		this.numSimpleFOs = numGeneratedFOs;
+	}
+
+	public void setPortfolioCost(double portfolioCost) {
+		this.portfolioCost = portfolioCost;
+	}
+
+	public void setPortfolioTotalCost(double portfolioCost) {
+		this.portfolioCost = portfolioCost;		
+	}
+
+	public double getFixedCosts() {
+		return fixedCosts;
+	}
+
+	public void setFixedCosts(double fixedCosts) {
+		this.fixedCosts = fixedCosts;
+	}
+
+	
+	
 }

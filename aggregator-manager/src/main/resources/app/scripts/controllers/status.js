@@ -27,6 +27,8 @@
 
 angular.module('foaManApp').controller('StatusCtrl',
 		function($scope, $location, $timeout, $route, serviceFOA) {
+	
+			$scope.obj = serviceFOA.Objective.get();			
 			$scope.simpleFOs = serviceFOA.SimpleFOs.query();
 			$scope.aggFOs = serviceFOA.AggFOs.query();
 			$scope.timeSeries = [ 
@@ -82,12 +84,18 @@ angular.module('foaManApp').controller('StatusCtrl',
 				marker : {
                     enabled : true,
                     radius : 4
-				}
+				} 
 			}];
+		
+			
+			$scope.updateObjective = function() {
+				var upd = new serviceFOA.Objective($scope.obj);				
+				upd.$save().then(function(res) { $route.reload(); });	
+			}
 
 			$scope.generateAssignments = function() {
 				var asg = new serviceFOA.TriggerRandomAssignments();
-				asg.$save().then(function(res) { $route.reload(); });		
+				asg.$save().then(function(res) { $route.reload();  });		
 				
 			}
 			/*[{"id":0,"state":"Initial","offeredById":"","acceptanceBeforeTime":"1970-01-01T01:00:00.000+0100","assignmentBeforeDurationSeconds":0,"assignmentBeforeTime":"1970-01-01T01:00:00.000+0100","creationTime":"1970-01-01T01:00:00.000+0100","durationSeconds":60,"endAfterTime":"1970-01-01T01:01:00.000+0100","endBeforeTime":"1970-01-01T01:01:00.000+0100","numSecondsPerInterval":60,"startAfterTime":"1970-01-01T01:00:00.000+0100","startBeforeTime":"1970-01-01T01:00:00.000+0100","slices":[{"durationSeconds":60,"costPerEnergyUnitLimit":1.0,"energyConstraint":{"lower":0.0,"upper":10.0},"tariffConstraint":{"lower":0.0,"upper":10.0}}],"flexOfferSchedule":null},
