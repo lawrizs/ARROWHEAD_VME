@@ -58,7 +58,6 @@ public class AmountFlexOptimizer {
 
     
     private void fixEnergyValue(int fid, int sliceId) {
-    	double value = getEnergyValue(fid, sliceId);
     	FlexOffer f = this.fp.getFlexOffers().get(fid);
     	FlexOfferSlice fc = f.getSlice(sliceId);
     	
@@ -76,7 +75,9 @@ public class AmountFlexOptimizer {
 
     	}
     	
-    	// Fix based on min/max energy constraints    	
+    	// Fix based on min/max energy constraints
+    	double value = getEnergyValue(fid, sliceId);
+    	
     	if (value > fc.getEnergyUpper()) {
     		this.setEnergyValue(fid, sliceId, fc.getEnergyUpper());
     	}

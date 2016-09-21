@@ -293,7 +293,7 @@ public class AggregatorManager extends StandAloneApp implements
 
     public void bidSupplySendToMarket(BidV2 bid) throws MarketException {
 			if (xMProvider != null) {
-				xMProvider.bidV2Supply(bid);
+				xMProvider.sendBidV2(bid);
 			} else {
 				throw new MarketException("Not connected to the market!");
 			}
@@ -470,9 +470,12 @@ public class AggregatorManager extends StandAloneApp implements
             }
 
             f.setSlices(sl.toArray(new FlexOfferSlice[] {}));
-            double perc = Math.random();
-            f.setTotalEnergyConstraint(new FlexOfferConstraint(totalMinE + (totalMaxE - totalMinE)*perc, 
-            		                                           totalMinE + (totalMaxE - totalMinE)*perc));
+            double perc = 0.5; // Math.random();
+            
+            if ( i % 2 == 0){
+	            f.setTotalEnergyConstraint(new FlexOfferConstraint(totalMinE + (totalMaxE - totalMinE)*perc, 
+	            		                                           totalMinE + (totalMaxE - totalMinE)*perc));
+            }
 
             // f.setDefaultSchedule(new FlexOfferSchedule(f)); /* Set default schedule */
 

@@ -170,12 +170,7 @@ public class MarketResource implements MarketProviderIf {
 	}
 
 	@Override
-	public void bidV2Supply(BidV2 bid) throws MarketException {
-		new UnsupportedOperationException("Market V2 bids are not supported!");		
-	}
-
-	@Override
-	public void bidV2Demand(BidV2 bid) throws MarketException {
+	public void sendBidV2(BidV2 bid) throws MarketException {
 		new UnsupportedOperationException("Market V2 bids are not supported!");
 	}
 }

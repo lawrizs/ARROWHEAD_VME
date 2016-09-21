@@ -92,13 +92,8 @@ public class XMarketProviderClient implements MarketProviderIf {
 	}
 
 	@Override
-	public void bidV2Supply(BidV2 bid) throws MarketException {
+	public void sendBidV2(BidV2 bid) throws MarketException {
 		bidV2(bid, "supply");
-	}
-
-	@Override
-	public void bidV2Demand(BidV2 bid) throws MarketException {
-		bidV2(bid, "demand");
 	}
 	
 	private void bidV2(BidV2 bid, String uri) throws MarketException {
