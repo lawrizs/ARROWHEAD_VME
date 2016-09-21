@@ -33,7 +33,7 @@ public class XFlexOfferResource implements FlexOfferAggregatorSubscriberIf {
         try {
             att.createFlexOffer(ownerId, flexOffer);
         } catch (FlexOfferException e) {
-            logger.error("createFlexOffer: " + e.getMessage());
+            logger.error("createFlexOffer: {}", e.getMessage());
             throw new WebApplicationException(e.getMessage(), 400);
         }
         return flexOffer.getId();

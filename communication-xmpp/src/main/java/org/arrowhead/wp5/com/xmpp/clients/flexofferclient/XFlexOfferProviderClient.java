@@ -96,7 +96,7 @@ public class XFlexOfferProviderClient implements FlexOfferProviderIf {
 			if (resp.getStatusCode() != 200) {
 				/** Should not go there! */
 				/** TODO better error handling */
-				System.out.println("Bad request!");
+				logger.warn("Bad request!");
 			}
 
 		} catch (JAXBException e) {

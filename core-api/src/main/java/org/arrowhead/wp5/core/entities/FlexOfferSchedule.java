@@ -37,6 +37,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The flexoffer schedule
  * 
@@ -48,6 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FlexOfferSchedule implements Serializable {
 	private static final long serialVersionUID = -4483570615558363704L;
+    private static final Logger logger = LoggerFactory.getLogger(FlexOfferSchedule.class);
 
 	/***
 	 * Specifies the energy fix. For each EnergyInterval in the original
@@ -186,20 +190,20 @@ public class FlexOfferSchedule implements Serializable {
 		
 		if (this.getStartInterval() < flexOffer.getStartAfterInterval()
 				|| this.getStartInterval() > flexOffer.getStartBeforeInterval()){
-			System.out.println("Interval issue: FOSch start=>" + this.getStartInterval() + " FO start after=>" + flexOffer.getStartAfterInterval() + 
-					" FO start before=>" + flexOffer.getStartBeforeInterval());
+			logger.info("Interval issue: FOSch start=>{} FO start after=>{} FO start before=>{}",
+			        this.getStartInterval(), flexOffer.getStartAfterInterval(), flexOffer.getStartBeforeInterval());
 			return false;
 		}
 		if ((this.getEnergyAmounts() == null)
 				|| (this.getEnergyAmounts().length != flexOffer.getSlices().length)){
-			System.out.println("Energy Amount issue");
+		    logger.info("Energy Amount issue");
 			return false;
 		}
 		for (int i = 0; i < this.getEnergyAmounts().length; i++){
 			if (this.getEnergyAmounts()[i] < flexOffer.getSlices()[i].getEnergyLower()
 					|| this.getEnergyAmounts()[i] > flexOffer.getSlices()[i].getEnergyUpper())
 			{
-				System.out.println("Energy Amount 2 issue");
+			    logger.info("Energy Amount 2 issue");
 				return false;
 			}
 		}

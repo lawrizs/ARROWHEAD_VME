@@ -33,7 +33,7 @@ public class FOConfig {
         try {
         	val = Integer.parseInt(properties.getProperty(key, Integer.toString(def)));
         } catch (NumberFormatException e) {
-        	logger.warn("Unable to parse Integer value for key: " + key);
+            logger.warn("Unable to parse Integer value for key: {}", key);
         }
         
 		return val;

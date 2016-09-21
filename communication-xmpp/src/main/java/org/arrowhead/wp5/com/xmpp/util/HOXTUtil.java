@@ -46,7 +46,6 @@ public final class HOXTUtil {
 			m.setProperty(Marshaller.JAXB_FRAGMENT, true);
 			StringWriter writer = new StringWriter();
 			m.marshal(entity, writer);
-			System.out.println("Test: " + writer.toString());
 			AbstractHttpOverXmpp.Xml child = new AbstractHttpOverXmpp.Xml(writer.toString());
 			AbstractHttpOverXmpp.Data data = new AbstractHttpOverXmpp.Data(child);
 			return data;
