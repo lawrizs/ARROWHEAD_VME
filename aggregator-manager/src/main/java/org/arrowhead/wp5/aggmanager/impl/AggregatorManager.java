@@ -257,14 +257,6 @@ public class AggregatorManager extends StandAloneApp implements
         resourceManager.registerInstance(new XFlexOfferResource(this.agg));
         if (CONNECT_TO_MARKET) {
             resourceManager.registerInstance(new XMarketResource(this));
-            
-            MarketInfo info = this.getMarketInfo();
-            
-            if (info != null) {
-	            logger.debug("Area: {}", info.getArea());
-	            logger.debug("Interval: {}", info.getInterval());
-	            logger.debug("Next Period: {}", info.getNextPeriod());
-            }
         }
         
         /* Start the XMPP server */
@@ -278,6 +270,14 @@ public class AggregatorManager extends StandAloneApp implements
         
         if (CONNECT_TO_MARKET) {
             xMProvider = new XMarketProviderClient(marketId, hoxtManager);
+            
+            MarketInfo info = this.getMarketInfo();
+            
+            if (info != null) {
+	            logger.debug("Area: {}", info.getArea());
+	            logger.debug("Interval: {}", info.getInterval());
+	            logger.debug("Next Period: {}", info.getNextPeriod());
+            }            
         }
     }
     
