@@ -54,6 +54,9 @@ public class XMarketResource implements MarketSubscriberIf {
 	}
 
 	@Override
+	@Path("/acceptBidV2")
+	@PUT
+	@POST
 	public void acceptBidV2(BidV2 bid) throws MarketException {
 		this.man.acceptBidV2(bid);		
 	}
