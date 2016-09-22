@@ -63,6 +63,8 @@ import org.arrowhead.wp5.core.entities.FlexOfferSchedule;
 import org.arrowhead.wp5.core.entities.FlexOfferSlice;
 import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.entities.MarketInfo;
+import org.arrowhead.wp5.core.entities.TimeSeries;
+import org.arrowhead.wp5.core.entities.TimeSeriesType;
 import org.arrowhead.wp5.core.interfaces.FlexOfferUpdateListener;
 import org.arrowhead.wp5.core.services.AggServiceManager;
 import org.arrowhead.wp5.core.util.FOConfig;
@@ -381,9 +383,16 @@ public class AggregatorManager extends StandAloneApp implements
     	
         BidV2 bid = this.agg.generate_maketV2_bid(dateFrom, dateTo);
         
+        TimeSeries baseline = new TimeSeries(bid.getBidFlexOffer(), TimeSeriesType.tstBaselineEnergy);
+        
+        bid.setWinQuantities(baseline .getData());
+        bid.setWinPrices(baseline.mul(0).getData());
+        
         MarketCommitment mc = new MarketCommitment();
         mc.setLocation(0);
         mc.setWinning_bid(bid);
+        mc.setContract(this.agg.getMarketContract());
+        
         this.agg.addMarketCommitment(mc);
     }
 
