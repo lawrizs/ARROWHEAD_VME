@@ -531,18 +531,19 @@ public class FlexOffer implements Serializable, Cloneable {
             logger.info("startAfterInterval is after startBeforeInterval");
             return false;
         }
-        if (acceptanceBeforeInterval > startBeforeInterval) {
-            logger.info("acceptanceBeforeInterval is after startBeforeInterval");
+        
+        if (acceptanceBeforeInterval > this.getEndAfterInterval()) {
+            logger.info("acceptanceBeforeInterval is after endBeforeInterval");
             return false;
         }
-        if (assignmentBeforeInterval > startBeforeInterval) {
-            logger.info("assignmentBeforeInterval is after startBeforeInterval");
+        if (assignmentBeforeInterval > this.getEndAfterInterval()) {
+            logger.info("assignmentBeforeInterval is after endBeforeInterval");
             return false;
         }
-        if (assignmentBeforeDurationIntervals > startBeforeInterval) {
+       /* if (assignmentBeforeDurationIntervals < startBeforeInterval) {
             logger.info("assignmentBeforeDurationIntervals is after startBeforeInterval");
             return false;
-        }
+        }*/
 
 //        for (FlexOfferSlice s : slices) {
 //            check totalEnergyConstraint

@@ -32,6 +32,7 @@ package org.arrowhead.wp5.agg.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +65,7 @@ import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.FlexOffer;
 import org.arrowhead.wp5.core.entities.FlexOfferException;
 import org.arrowhead.wp5.core.entities.FlexOfferSchedule;
+import org.arrowhead.wp5.core.entities.FlexOfferSlice;
 import org.arrowhead.wp5.core.entities.FlexOfferState;
 import org.arrowhead.wp5.core.entities.TimeSeries;
 import org.arrowhead.wp5.core.entities.TimeSeriesType;
@@ -377,21 +379,6 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 
     ScheduledExecutorService execService =  Executors.newScheduledThreadPool(1);
     ScheduledFuture<?> execFuture = null;
-	
-	public void delayedPlanning() {
-		try {
-			if (execFuture == null || execFuture.isDone()) {			
-				execFuture = execService.schedule(new Runnable() {
-					@Override
-					public void run() {
-						runPlanning();					
-					}}, 1000, TimeUnit.MILLISECONDS);
-			}
-		} catch(Exception e) {
-			
-		}
-	}
-	
 
 	private double computeFixedCosts() {
 		double value = 0;
@@ -408,12 +395,28 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 		return new FlexOfferPortfolio(this, aggFlexOffers.values(), this.market_commitments, this.computeFixedCosts());
 	}
 	
+	public void delayedPlanning() {
+		try {
+			if (execFuture == null || execFuture.isDone()) {			
+				execFuture = execService.schedule(new Runnable() {
+					@Override
+					public void run() {
+						runPlanning();					
+					}}, 1000, TimeUnit.MILLISECONDS);
+			}
+		} catch(Exception e) {
+			
+		}
+	}	
+	
 	public void runPlanning() {
+		/* Invalidate parts of flex-offer profiles that are positioned earlier than the current time */
+		this.invalidateFlexOffers();
+		
 		/* Aggregate flex-offers */
-		aggregateFlexOffers();				
+		this.aggregateFlexOffers();				
 				
-		/* Run planning */
-		//  Collections.nCopies(aggFlexOffers.size(), this.defaultMarketContract)
+		/* Run planning */		
 		FlexOfferPortfolio fp = this.getFlexOfferPortfolio();
 		AggregatorOptimization opt = new AggregatorOptimization(fp, this.objective);
 		try {
@@ -433,6 +436,52 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 		}		
 		
 	}
+
+	/**
+	 *  Invalidate (parts of) flex-offer profiles that were supposed to be executed, i.e., are positioned earlier than the current time 
+	 *  */	
+	private void invalidateFlexOffers() {
+		long currentTid = FlexOffer.toFlexOfferTime(new Date());
+		
+		for(FlexOffer f : this.getAllSimpleFlexOffers()) {
+			FlexOfferSchedule sch = f.getFlexOfferSchedule();
+			
+			/* Two case, when : 1) schedule is availabe; 2) schedule is not available */
+			if (sch != null) {
+				
+				/* Start-time bound has been crossed */				
+				if (currentTid >= sch.getStartInterval()) {
+					
+					/* Stat-time treatment - lock-in the start-time */
+					f.setStartAfterInterval(sch.getStartInterval());
+					f.setStartBeforeInterval(sch.getStartInterval());
+					
+					/* Energy amount treatment - lock-in the energy amounts */
+					long sliceTid = sch.getStartInterval();					
+					for (int i=0; i < f.getSlices().length; i++) {
+						FlexOfferSlice s = f.getSlice(i);
+						
+						if (currentTid >= sliceTid) {
+							s.getEnergyConstraint().setLower(sch.getEnergyAmount(i));
+							s.getEnergyConstraint().setUpper(sch.getEnergyAmount(i));
+						}
+						
+						sliceTid += s.getDuration();
+					}
+				}				
+			} else {
+				
+			
+				/* Start time treatment */
+				if (currentTid > f.getStartAfterInterval()) {
+					
+					/* Fix the EST */
+					f.setStartAfterInterval(Math.min(currentTid, f.getStartBeforeInterval()));
+				}
+			}
+		}		
+	}
+
 
 	/* Disaggregates a particular aggregated flexoffer schedule */
 	private Collection<FlexOffer> disaggregateFlexOffer(AggregatedFlexOffer aggFo) {

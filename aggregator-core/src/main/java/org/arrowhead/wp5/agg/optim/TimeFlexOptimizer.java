@@ -30,6 +30,8 @@ package org.arrowhead.wp5.agg.optim;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.arrowhead.wp5.core.entities.FlexOffer;
+
 public class TimeFlexOptimizer {
 	private AggregatorOptimization opt;
 	private FlexOfferPortfolio fp;
@@ -42,11 +44,24 @@ public class TimeFlexOptimizer {
 	private final double BOLTZMANN_CONSTANT = 1.0;
 	private final double TEMP_FACTOR =        0.5;
 	
+	private double timeFlexibility;
+	
 	public TimeFlexOptimizer(AggregatorOptimization opt){
 		this.opt = opt;
 		this.fp = opt.getFlexOfferPortfolio();
+		this.timeFlexibility = this.computeTimeFlexibility(); 
 	}
 	
+	private double computeTimeFlexibility() {
+		double timeFlex = 0;
+		for (FlexOffer f : this.fp.getFlexOffers()) {
+			if (f.getStartBeforeInterval() - f.getStartAfterInterval() > timeFlex) {
+				timeFlex = f.getStartBeforeInterval() - f.getStartAfterInterval();
+			}
+		}
+		return timeFlex;
+	}
+
 	private long [] getCurrentState() {
 		long [] state = new long[this.fp.getFlexOffers().size()];
 		for(int i=0; i < state.length; i++) {
@@ -65,15 +80,37 @@ public class TimeFlexOptimizer {
 		long [] state = new long[state0.length];
 		for(int i = 0; i < state.length; i++){
 			state[i] = (long) (state0[i] + r.nextGaussian() * t);
-			
+
 			// Check state validity
-			if (state[i] < this.fp.getFlexOffers().get(i).getStartAfterInterval()) {
+			if (this.fp.getFlexOffers().get(i).getStartAfterInterval() == 
+				this.fp.getFlexOffers().get(i).getStartBeforeInterval()) {
 				state[i] = this.fp.getFlexOffers().get(i).getStartAfterInterval();
+				
+				continue;
+			}
+			
+			if (state[i] < this.fp.getFlexOffers().get(i).getStartAfterInterval()) {
+				state[i] = this.fp.getFlexOffers().get(i).getStartBeforeInterval() -
+						  (this.fp.getFlexOffers().get(i).getStartAfterInterval() - state[i]) %
+						  (this.fp.getFlexOffers().get(i).getStartBeforeInterval() - 
+						   this.fp.getFlexOffers().get(i).getStartAfterInterval());							
 			}
 			
 			if (state[i] > this.fp.getFlexOffers().get(i).getStartBeforeInterval()) {
-				state[i] = this.fp.getFlexOffers().get(i).getStartBeforeInterval();
+				state[i] = this.fp.getFlexOffers().get(i).getStartAfterInterval() +
+						  (state[i] - this.fp.getFlexOffers().get(i).getStartBeforeInterval()) %
+						  (this.fp.getFlexOffers().get(i).getStartBeforeInterval() - 
+						   this.fp.getFlexOffers().get(i).getStartAfterInterval());				
 			}
+			
+//			// Check state validity
+//			if (state[i] < this.fp.getFlexOffers().get(i).getStartAfterInterval()) {
+//				state[i] = this.fp.getFlexOffers().get(i).getStartAfterInterval();
+//			}
+//			
+//			if (state[i] > this.fp.getFlexOffers().get(i).getStartBeforeInterval()) {
+//				state[i] = this.fp.getFlexOffers().get(i).getStartBeforeInterval();
+//			}
 		}
 		
 		return state;
@@ -92,7 +129,7 @@ public class TimeFlexOptimizer {
 		double e, e_new; // energy of current and new state
 
 		e = getFitnessValue(pCurrent);
-		t=MAX_TEMP;
+		t=2*this.timeFlexibility;  // MAX_TEMP;
 		
 		while( t >= MIN_TEMP) {
 			if (e <= 1e-5) {
@@ -107,7 +144,6 @@ public class TimeFlexOptimizer {
 				
 				// Check state acceptance
 	  	        if ( Boltzmann(e, e_new, t) ) { // make pDest new current state?
-	  	        	// System.arraycopy(pDest, 0, pCurrent, 0, pDest.length);
 	  	        	pCurrent = pDest;
 			    }
 			}

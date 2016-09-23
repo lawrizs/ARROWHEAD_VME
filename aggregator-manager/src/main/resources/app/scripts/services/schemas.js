@@ -170,14 +170,30 @@ angular.module('foaManApp').factory(
 							"costPerEnergyUnitLimitType" : {
 								"$ref" : "#/definitions/acStatus",
 								"propertyOrder" : 28
-							}
+							},
+							"baselineAdvancingTolerance" : {
+								"type" : "integer",
+								"propertyOrder" : 29
+							},
+							"baselineAdvancingType" : {
+								"$ref" : "#/definitions/acStatus",
+								"propertyOrder" : 30
+							},
+							"baselineRetardingTolerance" : {
+								"type" : "integer",
+								"propertyOrder" : 31
+							},							
+							"baselineRetardingType" : {
+								"$ref" : "#/definitions/acStatus",
+								"propertyOrder" : 32
+							}						
 						}
 					}
 				},
 				definitions : {
 					psProfileShape : {
 						type : 'string',
-						enum : [ "psAlignStart", "psAlignEnds",
+						enum : [ "psAlignStart", "psAlignBaseline", "psAlignEnds",
 								"psUniformTimeFlex", "psFlat" ],
 						required : true
 					},

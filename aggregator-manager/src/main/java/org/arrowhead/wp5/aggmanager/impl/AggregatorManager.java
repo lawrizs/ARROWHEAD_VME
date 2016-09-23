@@ -126,9 +126,6 @@ public class AggregatorManager extends StandAloneApp implements
     /* Arrowhead Subsystem */
     //	private ArrowheadSubsystem arrowheadSubsystem;
     private AggServiceManager aggServiceManager;
-
-    //	private List<HashMap<String, String>> producersList;
-    //	private OrchestrationConfig orchestrationConfig; 
     
     /* Set of http client ids for which schedule should not be sent through XMPP */
     private HashSet<String> httpClients;
@@ -212,8 +209,6 @@ public class AggregatorManager extends StandAloneApp implements
                 new BillingResource(this.agg),
                 new VMarketResource(this));
 
-        /* Initializes Arrowhead Subsystem */
-        //		this.arrowheadSubsystem = new ArrowheadSubsystem(agg);
         this.httpClients = new HashSet<String>();
     }
 
@@ -479,12 +474,13 @@ public class AggregatorManager extends StandAloneApp implements
             }
 
             f.setSlices(sl.toArray(new FlexOfferSlice[] {}));
+            /*
             double perc = 0.5; // Math.random();
             
             if ( i % 2 == 0){
 	            f.setTotalEnergyConstraint(new FlexOfferConstraint(totalMinE + (totalMaxE - totalMinE)*perc, 
 	            		                                           totalMinE + (totalMaxE - totalMinE)*perc));
-            }
+            }*/
 
             // f.setDefaultSchedule(new FlexOfferSchedule(f)); /* Set default schedule */
 
