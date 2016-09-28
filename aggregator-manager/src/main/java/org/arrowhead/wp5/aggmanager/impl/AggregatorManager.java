@@ -320,7 +320,7 @@ public class AggregatorManager extends StandAloneApp implements
             if (ARROWHEAD_COMPLIANT) {
                 //				this.arrowheadSubsystem.init();
                 this.aggServiceManager = new AggServiceManager();
-                this.aggServiceManager.publishAggXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource());
+                this.aggServiceManager.publishAggXMPP((String) config.getUsername(), xmppHostname, xmppPort, config.getResource(), xmppService);
             }
 
             /* Print a welcome message */

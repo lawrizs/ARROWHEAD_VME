@@ -52,6 +52,7 @@ public class ArrowheadXMPPServiceManager {
 	private String hostname;
 	private int port;
 	private String resource;
+	private String service;
 	private String aggId;
 	
 	/** Certificates */
@@ -114,6 +115,7 @@ public class ArrowheadXMPPServiceManager {
 
 		ServiceMetadata metadataSet = serviceInfo.getMetadata();
 		resource = metadataSet.get(ArrowheadConstants.RESOURCE_NAME);
+		service = metadataSet.get(ArrowheadConstants.SERVICE_NAME);
 		aggId = metadataSet.get(ArrowheadConstants.JABBER_ID_NAME);
 
 		logger.info("Fetched: {}@{}:{}/{}", aggId, hostname, Integer.toString(port), resource);
@@ -154,6 +156,10 @@ public class ArrowheadXMPPServiceManager {
 
 	public String getResource() {
 		return resource;
+	}
+
+	public String getService() {
+		return service;
 	}
 
 	public String getAggId() {

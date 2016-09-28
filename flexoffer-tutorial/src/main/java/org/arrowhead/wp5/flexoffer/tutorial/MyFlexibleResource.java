@@ -116,6 +116,7 @@ public class MyFlexibleResource implements FlexOfferUpdateListener {
             xmppServer = this.foServiceManager.getHostname();
             xmppPort = this.foServiceManager.getPort();
             xmppResource = this.foServiceManager.getResource();
+            xmppService = this.foServiceManager.getService();
             logger.info("Aggregator ID set from Arrowhead framework: {}", aggId);
         } else {
             logger.warn("Failed to discover aggregator through Arrowhead framework. Using default config");
@@ -167,7 +168,7 @@ public class MyFlexibleResource implements FlexOfferUpdateListener {
     public void onFlexOfferScheduleUpdate(FlexOffer fo) {
         /* Forwards the FlexOffer with the Schedule to the FlexibleDER */
         flexDER.updateSchedule(fo);
-        logger.debug("received schedule!");
+        logger.info("Received schedule!");
         synchronized (this) {
             this.notify();
         }

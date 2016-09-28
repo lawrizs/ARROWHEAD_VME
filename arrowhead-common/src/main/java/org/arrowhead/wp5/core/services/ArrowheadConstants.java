@@ -33,5 +33,6 @@ public final class ArrowheadConstants {
     public static final String MARKET_HTTP_TYPE = "_fomarket-http._tcp";
     public static final String JABBER_ID_NAME = "jabberid";
     public static final String RESOURCE_NAME = "resource";
+    public static final String SERVICE_NAME = "service";
     public static final String PATH_NAME = "path";
 }

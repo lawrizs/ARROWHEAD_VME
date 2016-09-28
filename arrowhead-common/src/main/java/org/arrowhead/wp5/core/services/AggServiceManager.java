@@ -55,15 +55,15 @@ public class AggServiceManager {
         sis = new HashSet<ServiceInformation>();
     }
 
-    public void publishMarketXMPP(String username, String xmppHostname, int xmppPort, String resource) throws ArrowheadException {
-        publishXMPP(username, xmppHostname, xmppPort, resource, ArrowheadConstants.MARKET_XMPP_TYPE);
+    public void publishMarketXMPP(String username, String xmppHostname, int xmppPort, String resource, String service) throws ArrowheadException {
+        publishXMPP(username, xmppHostname, xmppPort, resource, service, ArrowheadConstants.MARKET_XMPP_TYPE);
     }
 
-    public void publishAggXMPP(String username, String xmppHostname, int xmppPort, String resource) throws ArrowheadException {
-        publishXMPP(username, xmppHostname, xmppPort, resource, ArrowheadConstants.AGG_XMPP_TYPE);
+    public void publishAggXMPP(String username, String xmppHostname, int xmppPort, String resource, String service) throws ArrowheadException {
+        publishXMPP(username, xmppHostname, xmppPort, resource, service, ArrowheadConstants.AGG_XMPP_TYPE);
     }
 
-    private void publishXMPP(String username, String xmppHostname, int xmppPort, String resource, String xmppType) throws ArrowheadException {
+    private void publishXMPP(String username, String xmppHostname, int xmppPort, String resource, String service, String xmppType) throws ArrowheadException {
         try {
             for (ServiceIdentity si : sd.getServicesByType(xmppType)) {
                 String[] s = si.getId().split("\\.");
@@ -78,6 +78,7 @@ public class AggServiceManager {
             ServiceMetadata metadata = new ServiceMetadata();
             metadata.put(ArrowheadConstants.JABBER_ID_NAME, username);// + "@" + xmppHostname);
             metadata.put(ArrowheadConstants.RESOURCE_NAME, resource);
+            metadata.put(ArrowheadConstants.SERVICE_NAME, service);
 
             ServiceInformation si = new ServiceInformation(
                     new ServiceIdentity(idd, xmppType),
