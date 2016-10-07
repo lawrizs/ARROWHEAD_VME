@@ -54,26 +54,22 @@ public class ArrowheadXMPPServiceManager {
 	private String resource;
 	private String service;
 	private String aggId;
-	
-	/** Certificates */
-	private String keystoreFilename;
-	private String keystorePassword;
-	private String truststoreFilename;
-	private String truststorePassword;
+	ClientFactoryREST_WS clientFactory;
+
+	public ArrowheadXMPPServiceManager() {
+		clientFactory = new ClientFactoryREST_WS();
+	}
 
 	public ArrowheadXMPPServiceManager(Properties properties) {
-		keystoreFilename = properties.getProperty("fom.keystoreFilename", "alpha.jks").trim();
-		keystorePassword = properties.getProperty("fom.keystorePassword", "XXXXX").trim();
-		truststoreFilename = properties.getProperty("fom.truststoreFilename", "alpha.jks").trim();
-		truststorePassword = properties.getProperty("fom.truststorePassword", "XXXXX").trim();
+		this(properties.getProperty("fom.keystoreFilename", "alpha.jks").trim(),
+			properties.getProperty("fom.keystorePassword", "XXXXX").trim(),
+			properties.getProperty("fom.truststoreFilename", "alpha.jks").trim(),
+			properties.getProperty("fom.truststorePassword", "XXXXX").trim());
 	}
 	
 	public ArrowheadXMPPServiceManager(String keystoreFilename, String keystorePassword,
 			String truststoreFilename, String truststorePassword) {
-		this.keystoreFilename = keystoreFilename;
-		this.keystorePassword = keystorePassword;
-		this.truststoreFilename = truststoreFilename;
-		this.truststorePassword = truststorePassword;
+		clientFactory = new ClientFactoryREST_WS(truststoreFilename, truststorePassword, keystoreFilename, keystorePassword);
 	}
 
 	public void start() {
@@ -127,7 +123,6 @@ public class ArrowheadXMPPServiceManager {
 		logger.debug("Got Arrowhead Orchestration Services. Num: {}", orchServices.size());
 		for (ServiceIdentity si : orchServices){
 			ServiceInformation s = sd.getServiceInformation(si, HttpEndpoint.ENDPOINT_TYPE);
-			ClientFactoryREST_WS clientFactory = new ClientFactoryREST_WS(truststoreFilename, truststorePassword, keystoreFilename, keystorePassword);
 			OrchestrationStoreConsumerREST_WS orchestration = new OrchestrationStoreConsumerREST_WS((HttpEndpoint)s.getEndpoint(), clientFactory);
 			
 			OrchestrationConfig oc = orchestration.getActiveConfiguration();
