@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.arrowhead.wp5.core.entities.ArrowheadServiceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +50,12 @@ public class ArrowheadXMPPServiceManager {
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	ServiceDiscovery sd;
-	private String hostname;
-	private int port;
-	private String resource;
-	private String service;
-	private String aggId;
+	ArrowheadServiceInfo serviceInfo;
 	ClientFactoryREST_WS clientFactory;
 
 	public ArrowheadXMPPServiceManager() {
 		clientFactory = new ClientFactoryREST_WS();
+		sd = new ServiceDiscoveryDnsSD();
 	}
 
 	public ArrowheadXMPPServiceManager(Properties properties) {
@@ -69,15 +67,25 @@ public class ArrowheadXMPPServiceManager {
 	
 	public ArrowheadXMPPServiceManager(String keystoreFilename, String keystorePassword,
 			String truststoreFilename, String truststorePassword) {
+		this();
 		clientFactory = new ClientFactoryREST_WS(truststoreFilename, truststorePassword, keystoreFilename, keystorePassword);
 	}
 
 	public void start() {
-		sd = new ServiceDiscoveryDnsSD();
 	}
-	
+
 	public void shutdown(){
 		
+	}
+
+	public List<ArrowheadServiceInfo> fetchAllInfo() {
+		List <ArrowheadServiceInfo> res = new ArrayList<ArrowheadServiceInfo>();
+		List<ServiceIdentity> services = sd.getServicesByType(ArrowheadConstants.AGG_XMPP_TYPE);
+		for (ServiceIdentity si : services) {
+			res.add(genServiceInfo(si));
+		}
+
+		return res;
 	}
 
 	public boolean fetchInfo() {
@@ -88,7 +96,7 @@ public class ArrowheadXMPPServiceManager {
 		List<ServiceIdentity> services = sd.getServicesByType(ArrowheadConstants.AGG_XMPP_TYPE);
 		for (ServiceIdentity si : services) {
 			if (rules.contains(si.getId())) {
-				useServiceInfo(si);
+				serviceInfo = genServiceInfo(si);
 				result = true;
 			}
 		}
@@ -96,25 +104,26 @@ public class ArrowheadXMPPServiceManager {
 		if (!result) {
 			logger.info("No orchestrated aggregator found, trying non-orchestrated.");
 			if (services.size() > 0){
-				useServiceInfo(services.get(0));
+				serviceInfo = genServiceInfo(services.get(0));
 				result = true;
 			}
 		}
 		return result;
 	}
 
-	private void useServiceInfo(ServiceIdentity si) {
+	private ArrowheadServiceInfo genServiceInfo(ServiceIdentity si) {
 		ServiceInformation serviceInfo = sd.getServiceInformation(si, TcpEndpoint.ENDPOINT_TYPE);
 		TcpEndpoint ep = (TcpEndpoint)serviceInfo.getEndpoint();
-		hostname = ep.getHost();
-		port = ep.getPort();
+		String hostname = ep.getHost();
+		int port = ep.getPort();
 
 		ServiceMetadata metadataSet = serviceInfo.getMetadata();
-		resource = metadataSet.get(ArrowheadConstants.RESOURCE_NAME);
-		service = metadataSet.get(ArrowheadConstants.SERVICE_NAME);
-		aggId = metadataSet.get(ArrowheadConstants.JABBER_ID_NAME);
+		String resource = metadataSet.get(ArrowheadConstants.RESOURCE_NAME);
+		String service = metadataSet.get(ArrowheadConstants.SERVICE_NAME);
+		String aggId = metadataSet.get(ArrowheadConstants.JABBER_ID_NAME);
 
 		logger.info("Fetched: {}@{}:{}/{}", aggId, hostname, Integer.toString(port), resource);
+		return new ArrowheadServiceInfo(aggId, hostname, port, resource, service);
 	}
 
 	private List<String> getOrchestration() {
@@ -142,22 +151,37 @@ public class ArrowheadXMPPServiceManager {
 	}
 
 	public String getHostname() {
-		return hostname;
+		if (serviceInfo != null)
+			return serviceInfo.getHostname();
+		else
+			return null;
 	}
 
 	public int getPort() {
-		return port;
+		if (serviceInfo != null)
+			return serviceInfo.getPort();
+		else
+			return 0;
 	}
 
 	public String getResource() {
-		return resource;
+		if (serviceInfo != null)
+			return serviceInfo.getResource();
+		else
+			return null;
 	}
 
 	public String getService() {
-		return service;
+		if (serviceInfo != null)
+			return serviceInfo.getService();
+		else
+			return null;
 	}
 
 	public String getAggId() {
-		return aggId;
+		if (serviceInfo != null)
+			return serviceInfo.getAggId();
+		else
+			return null;
 	}
 }
