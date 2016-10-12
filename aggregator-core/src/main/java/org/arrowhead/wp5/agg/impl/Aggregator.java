@@ -469,6 +469,9 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 						
 						sliceTid += s.getDuration();
 					}
+					
+					/* Fix the default schedule */
+					f.setDefaultSchedule(new FlexOfferSchedule(sch));
 				}				
 			} else {
 				

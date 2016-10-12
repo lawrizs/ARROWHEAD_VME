@@ -356,20 +356,27 @@ public class AggregatorManager extends StandAloneApp implements
     }
 
     @Override
-    public void onFlexOfferScheduleUpdate(FlexOffer fo) {
-        if (fo.getFlexOfferSchedule() != null && httpClients.contains(fo.getOfferedById())) {
-            try {
-                xFOProvider.setSubscriberId(fo.getOfferedById());
-                xFOProvider.createFlexOfferSchedule(fo.getId(),
-                        fo.getFlexOfferSchedule());
-            } catch (FlexOfferException e) {
-                // TODO Need to handle this error based on HTTP return code if any
-                e.printStackTrace();
-            }
-            
-        }
+	public void onFlexOfferScheduleUpdate(FlexOffer fo) {
 
-    }
+		if (fo.getFlexOfferSchedule() == null) {
+			logger.info("Trying to execute flex-offer with no schedule");
+			return;
+		}
+
+		if (!httpClients.contains(fo.getOfferedById())) {
+			logger.info("No HTTP client ({}) found for returning the schedule", fo.getOfferedById());
+			return;
+		}
+
+		try {
+			xFOProvider.setSubscriberId(fo.getOfferedById());
+			xFOProvider.createFlexOfferSchedule(fo.getId(),
+					fo.getFlexOfferSchedule());
+		} catch (FlexOfferException e) {
+			// TODO Need to handle this error based on HTTP return code if any
+			e.printStackTrace();
+		}
+	}
     
     public void demoCommit() {
     	long dateFrom = this.agg.getFlexOffers()[0].getStartAfterInterval();
@@ -436,7 +443,7 @@ public class AggregatorManager extends StandAloneApp implements
             long mFrom = cal.getTimeInMillis();
             cal.setTime(dateTo);
             long mTo = cal.getTimeInMillis();
-            long mEST = (long) (mFrom + 15 * Math.random() * (mTo - mFrom));
+            long mEST = (long) (mFrom + Math.random() * (mTo - mFrom));
             cal.setTimeInMillis(mEST);
 
             FlexOffer f = new FlexOffer();
