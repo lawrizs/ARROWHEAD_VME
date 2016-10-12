@@ -57,7 +57,6 @@ import org.arrowhead.wp5.com.xmpp.clients.marketclient.XMarketProviderClient;
 import org.arrowhead.wp5.core.entities.ArrowheadException;
 import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.FlexOffer;
-import org.arrowhead.wp5.core.entities.FlexOfferConstraint;
 import org.arrowhead.wp5.core.entities.FlexOfferException;
 import org.arrowhead.wp5.core.entities.FlexOfferSchedule;
 import org.arrowhead.wp5.core.entities.FlexOfferSlice;
@@ -358,7 +357,7 @@ public class AggregatorManager extends StandAloneApp implements
 
     @Override
     public void onFlexOfferScheduleUpdate(FlexOffer fo) {
-        if (fo.getFlexOfferSchedule() != null && !httpClients.contains(fo.getOfferedById())) {
+        if (fo.getFlexOfferSchedule() != null && httpClients.contains(fo.getOfferedById())) {
             try {
                 xFOProvider.setSubscriberId(fo.getOfferedById());
                 xFOProvider.createFlexOfferSchedule(fo.getId(),

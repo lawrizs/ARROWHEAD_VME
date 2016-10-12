@@ -221,7 +221,7 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 			flexOffer.setFlexOfferSchedule(null);
 			flexOffer.setState(FlexOfferState.Initial);
 		}
-		
+				
 		/* By default, schedule flexoffers to follow default schedule */
 			/*		if (flexOffer.getFlexOfferSchedule() == null) {
 			flexOffer.setFlexOfferSchedule(new FlexOfferSchedule(flexOffer.getDefaultSchedule().getStartInterval(), 
@@ -315,6 +315,7 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 			FlexOfferSchedule flexOfferSchedule) throws FlexOfferException {
 		AggregatedFlexOffer fo = this.aggFlexOffers.get(flexOfferId);
 		if (fo != null && flexOfferSchedule != null) {
+			flexOfferSchedule.fixNumericalErrors(fo);
 			if (flexOfferSchedule.isCorrect(fo)) {
 				fo.setFlexOfferSchedule(flexOfferSchedule);
 
@@ -497,6 +498,9 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 	/* Notifies FOA about the new schedule*/
 	public void executeFlexOffer(FlexOffer fo) throws FlexOfferException {		
 		boolean hasSchedule = fo.getFlexOfferSchedule() != null;
+		
+		/* Fix numerical errors in the schedule */
+		fo.getFlexOfferSchedule().fixNumericalErrors(fo);
 		
 		if (hasSchedule && !fo.getFlexOfferSchedule().isCorrect(fo)) {
 			throw new FlexOfferException("Trying to execute an invalid flexoffer schedule!");

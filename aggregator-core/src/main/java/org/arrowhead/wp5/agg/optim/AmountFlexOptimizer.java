@@ -32,7 +32,7 @@ import org.arrowhead.wp5.core.entities.FlexOfferSlice;
 
 public class AmountFlexOptimizer {
 	private AggregatorOptimization opt;
-    private FlexOfferPortfolio fp;
+    private FlexOfferPortfolio fp;    
     
     public AmountFlexOptimizer(AggregatorOptimization opt) {
     	this.opt = opt;
@@ -64,7 +64,7 @@ public class AmountFlexOptimizer {
     	FlexOfferSlice fc = f.getSlice(sliceId);
     	
     	// Fix based on total energy constraints 
-    	if (f.getTotalEnergyConstraint() != null) {
+    	if (handleTotalConstraints && (f.getTotalEnergyConstraint() != null)) {
 	    	double totalEnerg = this.getTotalEnergyValue(fid);
 	    	
 	    	if (totalEnerg < f.getTotalEnergyConstraint().getLower()) {
@@ -138,11 +138,17 @@ public class AmountFlexOptimizer {
     	}
     }
     
+
+    /* Suspend total constraints */
+    private boolean handleTotalConstraints = false;
+    
     // Optimize amounts, return true if it is a valid solution
     public boolean optimizeAmounts() {
-    	int numIter = 10;
-    	
+    	int numIter = 11;
+    	    	
 	    for(int i=0; i < numIter; i++) {
+	    	
+	    	this.handleTotalConstraints = i != 0;
 	    	
 	    	for(int fid = 0; fid < this.fp.getFlexOffers().size(); fid++) {
 	    		FlexOffer f = this.fp.getFlexOffers().get(fid);

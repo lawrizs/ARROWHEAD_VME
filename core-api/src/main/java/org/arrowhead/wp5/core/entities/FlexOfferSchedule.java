@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,8 @@ public class FlexOfferSchedule implements Serializable {
 	 * series. For the correct schedule, it must always be within the flex-offer
 	 * flexibilities.
 	 */
-	@XmlElement
+	// This was raising error, when provided as time @ XmlElement
+	@XmlTransient
 	private long startInterval;
 	
 
@@ -183,6 +185,28 @@ public class FlexOfferSchedule implements Serializable {
 		return result.toString();
 	}
 	
+	/**
+	 * Fix small numerical errors in the schedule 
+	 */
+	public void fixNumericalErrors(FlexOffer flexOffer) {
+		final double EPSILON = 1e-4;
+		
+		if ((this.getEnergyAmounts() != null) && (this.getEnergyAmounts().length == flexOffer.getSlices().length)){
+			for (int i = 0; i < this.getEnergyAmounts().length; i++) {
+				/* Check and fix lower bound */
+				if (this.getEnergyAmounts()[i] < flexOffer.getSlices()[i].getEnergyLower() && 
+				    this.getEnergyAmounts()[i] > flexOffer.getSlices()[i].getEnergyLower() - EPSILON) {
+					this.getEnergyAmounts()[i] = flexOffer.getSlices()[i].getEnergyLower();
+				}
+				
+				/* Check and fix lower bound */
+				if (this.getEnergyAmounts()[i] > flexOffer.getSlices()[i].getEnergyUpper() && 
+					this.getEnergyAmounts()[i] < flexOffer.getSlices()[i].getEnergyUpper() + EPSILON) {
+					this.getEnergyAmounts()[i] = flexOffer.getSlices()[i].getEnergyUpper();
+				}
+			}
+		}
+	}
 	
 	public boolean isCorrect(FlexOffer flexOffer) {
 		
