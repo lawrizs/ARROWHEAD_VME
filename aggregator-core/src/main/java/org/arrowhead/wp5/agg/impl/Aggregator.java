@@ -489,7 +489,7 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 
 	/* Disaggregates a particular aggregated flexoffer schedule */
 	private Collection<FlexOffer> disaggregateFlexOffer(AggregatedFlexOffer aggFo) {
-		try {
+		try {			
 			return agg.Disaggregate(aggFo);
 		} catch (AggregationException e) {
 			logger.error("Error disaggregating flex-offer. Error: ",

@@ -99,7 +99,12 @@ angular.module('foaManApp')
         					d3.min(flexoffer.slices, function(s) { return s.energyConstraint.lower; });	                
 	                var energyTo = scope.energyrange ? 
 	                					scope.energyrange[1] : 
-	                					d3.max(flexoffer.slices, function(s) { return s.energyConstraint.upper; });                					
+	                					d3.max(flexoffer.slices, function(s) { return s.energyConstraint.upper; });
+	                					
+	                if (Math.abs(energyFrom - energyTo) <= 1e-4) {
+	                	energyFrom -= 1;
+	                	energyTo += 1;
+	                }
 	
 	                // Scales
 	                var xScale = d3.time.scale().domain([timeFrom, timeTo]).range([0, width]); 	

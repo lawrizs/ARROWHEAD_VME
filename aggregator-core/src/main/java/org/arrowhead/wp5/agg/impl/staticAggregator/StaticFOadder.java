@@ -658,6 +658,12 @@ public class StaticFOadder implements IFlexOfferNto1Adder {
 		if (aggFo.getSubFoMetas() == null)
 			throw new AggregationException("Trying to disaggregate a flex-offer, but it has no aggregation metadata!");
 		
+		/* An aggregate of the 1 FO, just copy the schedule*/
+		if (aggFo.getSubFoMetas().size() == 1) {
+			aggFo.getSubFoMetas().get(0).getSubFlexOffer().setFlexOfferSchedule(new FlexOfferSchedule(aggSch));
+			return Arrays.asList(aggFo.getSubFlexOffers());
+		}
+		
 		// Create an iterator array
 		EnergyIntervalIterator [] sI = new EnergyIntervalIterator[aggFo.getSubFoMetas().size()];
 		FlexOfferSchedule [] sA = new FlexOfferSchedule [aggFo.getSubFoMetas().size()];

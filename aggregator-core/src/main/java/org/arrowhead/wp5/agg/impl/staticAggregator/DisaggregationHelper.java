@@ -54,7 +54,7 @@ public class DisaggregationHelper {
 			
 			double totalEn = getTotalEnergyValue(f);
 			
-			if (f.getTotalEnergyConstraint().getLower() <= totalEn && totalEn <= f.getTotalEnergyConstraint().getUpper()) {
+			if (f.getTotalEnergyConstraint().getLower() - 1e-6 <= totalEn && totalEn <= f.getTotalEnergyConstraint().getUpper() + 1e-6 ) {
 				continue; /* The constraint is satisfied */
 			}
 			
