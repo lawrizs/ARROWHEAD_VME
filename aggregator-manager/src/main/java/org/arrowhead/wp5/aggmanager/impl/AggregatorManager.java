@@ -57,6 +57,7 @@ import org.arrowhead.wp5.com.xmpp.clients.marketclient.XMarketProviderClient;
 import org.arrowhead.wp5.core.entities.ArrowheadException;
 import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.FlexOffer;
+import org.arrowhead.wp5.core.entities.FlexOfferConstraint;
 import org.arrowhead.wp5.core.entities.FlexOfferException;
 import org.arrowhead.wp5.core.entities.FlexOfferSchedule;
 import org.arrowhead.wp5.core.entities.FlexOfferSlice;
@@ -480,14 +481,15 @@ public class AggregatorManager extends StandAloneApp implements
             }
 
             f.setSlices(sl.toArray(new FlexOfferSlice[] {}));
-            /*
+
+            /* 
             double perc = 0.5; // Math.random();
             
-            if ( i % 2 == 0){
+            if ( i % 1 == 0){
 	            f.setTotalEnergyConstraint(new FlexOfferConstraint(totalMinE + (totalMaxE - totalMinE)*perc, 
 	            		                                           totalMinE + (totalMaxE - totalMinE)*perc));
-            }*/
-
+            }  */          
+            
             // f.setDefaultSchedule(new FlexOfferSchedule(f)); /* Set default schedule */
 
             if (schedule) {
