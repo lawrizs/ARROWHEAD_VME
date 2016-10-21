@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DisaggregationHelper {
 	final static Logger logger = LoggerFactory.getLogger(DisaggregationHelper.class);
-
+	
 	/**
 	 * Enforces the total energy constraint if any during schedule
 	 * disaggregation
@@ -47,7 +47,7 @@ public class DisaggregationHelper {
 	 * @param fos
 	 */
 	public static void enforceTotalEnergyConstraint(List<FlexOffer> fos) {
-		final int NUM_ITER = 10; 
+		final int NUM_ITER = 5; 
 		double totalDeltaEn = 0;
 		
 		// Create an iterator array
@@ -72,7 +72,7 @@ public class DisaggregationHelper {
 				
 				// Initialize the iterators 
 				for(int j=0; j<fos.size(); j++) {
-					sI[j] = new EnergyIntervalIterator(fos.get(j), fos.get(j).getFlexOfferSchedule().getStartInterval() - f.getFlexOfferSchedule().getStartInterval());
+					sI[j] = new EnergyIntervalIterator(fos.get(j), f.getFlexOfferSchedule().getStartInterval() - fos.get(j).getFlexOfferSchedule().getStartInterval());
 				}
 					
 				/* Now, redistribute the excess energy to other flex-offers */	
@@ -101,10 +101,8 @@ public class DisaggregationHelper {
 					for (EnergyIntervalIterator si : sI) { si.nextTS(); }
 				}
 				
-				if (Math.abs(deltaEn)>1e-6) {
-					totalDeltaEn += deltaEn; 
-				}
-				
+				totalDeltaEn += deltaEn; 
+								
 			}
 			
 			if (Math.abs(totalDeltaEn)<=1e-6 ) {
@@ -113,7 +111,34 @@ public class DisaggregationHelper {
 		}
 		
 		if (Math.abs(totalDeltaEn)>1e-6) {
-			logger.warn("Total Constraint cannot be enfoced for one of the flex-offers during the disaggregation");
+			// Constraints were not fulfilled without an error			
+			// Now apply disaggregation with error, adding errors as late as possible			
+			double disaggError = 0;
+			
+			for (int i=0; i<fos.size(); i++) {
+				FlexOffer f = fos.get(i);
+				
+				if (f.getTotalEnergyConstraint() == null) { 	continue; /* No total en. constraint */ }			
+				
+				double totalEn = getTotalEnergyValue(f);
+				
+				if (f.getTotalEnergyConstraint().getLower() - 1e-6 <= totalEn && totalEn <= f.getTotalEnergyConstraint().getUpper() + 1e-6 ) {
+					continue; /* The constraint is satisfied */
+				}
+				
+				double deltaEn = totalEn < f.getTotalEnergyConstraint().getLower() ? f.getTotalEnergyConstraint().getLower() - totalEn :
+																					 f.getTotalEnergyConstraint().getUpper() - totalEn;
+				
+				for (int j = f.getSlices().length - 1; j>=0; j--) {
+					double deallocValue = deallocateEnergy(f,(int) j, deltaEn);
+					
+					disaggError += Math.abs(deallocValue);
+					
+					deltaEn-=deallocValue;
+				}
+			}			
+			
+			logger.warn("Disaggregation succeeded with an error {}.", disaggError);
 		}
 	}
 	
@@ -123,17 +148,18 @@ public class DisaggregationHelper {
 		double energy = f.getFlexOfferSchedule().getEnergyAmounts()[sliceNr];
 		double newenergy = energy + deallocateRequest;
 		
-		if (!isTotalEnergyConstraintSatisfied(f)) { return 0; }
+		// if (!isTotalEnergyConstraintSatisfied(f)) { return 0; }
 		
 		if (f.getTotalEnergyConstraint() != null) {
-			double totalEnergy = getTotalEnergyValue(f) + newenergy - energy;
+			double totalEnergy = getTotalEnergyValue(f);
+			double newTotalEnergy = totalEnergy + deallocateRequest;
 			
-			if (totalEnergy < f.getTotalEnergyConstraint().getLower()) {
-				newenergy += f.getTotalEnergyConstraint().getLower() - totalEnergy;
+			if (totalEnergy >= f.getTotalEnergyConstraint().getLower() && newTotalEnergy < f.getTotalEnergyConstraint().getLower()) {
+				newenergy += f.getTotalEnergyConstraint().getLower() - newTotalEnergy;
 			}
 			
-			if (totalEnergy > f.getTotalEnergyConstraint().getUpper()) {
-				newenergy += f.getTotalEnergyConstraint().getUpper() - totalEnergy;
+			if (totalEnergy <= f.getTotalEnergyConstraint().getUpper() && newTotalEnergy > f.getTotalEnergyConstraint().getUpper()) {
+				newenergy += f.getTotalEnergyConstraint().getUpper() - newTotalEnergy;
 			}
 		}
 		
@@ -146,8 +172,10 @@ public class DisaggregationHelper {
 		}		
 		
 		f.getFlexOfferSchedule().getEnergyAmounts()[sliceNr] = newenergy; 
-		
-		return newenergy - energy;
+
+		double deallocateMade = newenergy - energy; 
+
+		return deallocateMade;
 	}
 
 	private static double getTotalEnergyValue(FlexOffer f) {
@@ -160,6 +188,7 @@ public class DisaggregationHelper {
 		return value;
 	}
 	
+	@SuppressWarnings("unused")
 	private static boolean isTotalEnergyConstraintSatisfied(FlexOffer f) {
 		
 		if (f.getTotalEnergyConstraint() == null) {
