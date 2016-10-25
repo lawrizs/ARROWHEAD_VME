@@ -366,7 +366,7 @@ public class AggregatorManager extends StandAloneApp implements
 
 		if (!httpClients.contains(fo.getOfferedById())) {
 			logger.info("No HTTP client ({}) found for returning the schedule", fo.getOfferedById());
-			return;
+			//return;
 		}
 
 		try {
