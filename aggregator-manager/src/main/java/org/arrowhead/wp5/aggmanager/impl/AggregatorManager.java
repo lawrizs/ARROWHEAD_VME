@@ -370,6 +370,7 @@ public class AggregatorManager extends StandAloneApp implements
 		}
 
 		try {
+			logger.info("Sending on XMPP");
 			xFOProvider.setSubscriberId(fo.getOfferedById());
 			xFOProvider.createFlexOfferSchedule(fo.getId(),
 					fo.getFlexOfferSchedule());
