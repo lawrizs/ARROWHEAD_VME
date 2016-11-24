@@ -35,9 +35,12 @@ import org.arrowhead.wp5.core.entities.Bid;
 import org.arrowhead.wp5.core.entities.BidV2;
 import org.arrowhead.wp5.core.entities.MarketException;
 import org.arrowhead.wp5.core.interfaces.MarketSubscriberIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/market")
 public class XMarketResource implements MarketSubscriberIf {
+	final static Logger logger = LoggerFactory.getLogger(XMarketResource.class);
 
 	AggregatorManager man;
 
@@ -58,6 +61,7 @@ public class XMarketResource implements MarketSubscriberIf {
 	@PUT
 	@POST
 	public void acceptBidV2(BidV2 bid) throws MarketException {
+		logger.debug("Received bid! {}", bid.getId());
 		this.man.acceptBidV2(bid);		
 	}
 }
