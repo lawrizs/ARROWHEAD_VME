@@ -651,15 +651,16 @@ public class Aggregator implements FlexOfferAggregatorProviderIf {
 		}
 		return ts;	
 	}
-	
-	
+		
 	public BidV2 generate_maketV2_bid(long timeFrom, long timeTo) {
 		FlexOfferPortfolio fp = new FlexOfferPortfolio(this, aggFlexOffers.values(), this.market_commitments, this.computeFixedCosts());
 		/* Always optimize costs when generating bids */
 		AggregatorOptimization opt = new AggregatorOptimization(fp, OptimizationObjective.objLowestCost); 
 		try {
 			BidV2 bid = opt.generate_maketV2_bid(timeFrom, timeTo);
-			bid.setId(this.getId());
+			int millis = (int) Math.abs(System.currentTimeMillis());
+			bid.setId(this.getId()+"_"+millis);
+			bid.getBidFlexOffer().setId(millis);
 			bid.setOwner(this.getId());
 			bid.setIs_seller_bid(true);
 			return bid;
