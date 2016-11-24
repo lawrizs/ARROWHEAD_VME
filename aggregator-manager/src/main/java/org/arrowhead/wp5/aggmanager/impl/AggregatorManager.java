@@ -386,8 +386,12 @@ public class AggregatorManager extends StandAloneApp implements
         BidV2 bid = this.agg.generate_maketV2_bid(dateFrom, dateTo);
         
         TimeSeries baseline = new TimeSeries(bid.getBidFlexOffer(), TimeSeriesType.tstBaselineEnergy);
+        double [] quantities = new double[bid.getBidFlexOffer().getSlices().length];
+        for(int i = 0; i < quantities.length; i++) {
+        	quantities [i] = bid.getBidFlexOffer().getSlices()[i].getEnergyLower();
+        }
         
-        bid.setWinQuantities(baseline .getData());
+        bid.setWinQuantities(/* baseline .getData()*/ quantities);
         bid.setWinPrices(baseline.mul(0).getData());
         
         MarketCommitment mc = new MarketCommitment();
