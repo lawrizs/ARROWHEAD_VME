@@ -208,10 +208,11 @@ public class AggregatorTestTool {
         if (!ownerId.equals(flexOffer.getOfferedById())) {
             throw new FlexOfferException("ownerId and offeredBy are not equal!");
         }
-        if (!flexOffer.isCorrect()) {
-            logger.warn("FlexOffer is not correct!");
+        String error = flexOffer.isCorrectWithOutput();
+        if (!"".equals(error)) {
+            logger.warn("FlexOffer is not correct!\nError:\n{}", error);
             // TODO: isCorrect is not completely implemented!
-            throw new FlexOfferException("FlexOffer is not correct!");
+            throw new FlexOfferException("FlexOffer is not correct!\nError:\n" + error);
         }
 
         Date now = new Date();
@@ -261,7 +262,7 @@ public class AggregatorTestTool {
 
                 FlexOfferSchedule fos = new FlexOfferSchedule();
                 fos.setEnergyAmounts(amounts);
-                fos.setStartInterval(flexOffer.getStartAfterInterval());
+                fos.setStartInterval(flexOffer.getStartAfterInterval() + (long)Math.floor(0.5 * (flexOffer.getStartBeforeInterval() - flexOffer.getStartAfterInterval())));
                 flexOffer.setFlexOfferSchedule(fos);
 
                 if (!httpClients.contains(flexOffer.getOfferedById())) {
@@ -273,6 +274,8 @@ public class AggregatorTestTool {
                         logger.warn("Error when sending schedule! ", e);
                     }
                     logger.info("Done sending.");
+                } else {
+                    logger.info("HTTP client, not sending schedule.");
                 }
             }
         }, 5 * 1 * 1000);
