@@ -210,7 +210,10 @@ public class FlexOfferSchedule implements Serializable {
 	
 	public boolean isCorrect(FlexOffer flexOffer) {
 		
-		if (flexOffer == null) return false;
+		if (flexOffer == null) {
+			logger.info("flexoffer is null");
+			return false;
+		}
 		
 		if (this.getStartInterval() < flexOffer.getStartAfterInterval()
 				|| this.getStartInterval() > flexOffer.getStartBeforeInterval()){

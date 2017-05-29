@@ -506,39 +506,32 @@ public class FlexOffer implements Serializable, Cloneable {
 	 * @TODO Need to implement. Check constraints, etc. 
 	 * @return
 	 */
-    public boolean isCorrect() {
+    public String isCorrectWithOutput() {
+        StringBuilder sb = new StringBuilder();
         if (state == null) {
-            logger.info("state is null.");
-            return false;
+            sb.append("state is null.\n");
         }
         if (offeredById == null || "".equals(offeredById)) {
-            logger.info("offeredById is null or empty.");
-            return false;
+            sb.append("offeredById is null or empty.\n");
         }
         if (slices == null) {
-            logger.info("slices is null.");
-            return false;
+            sb.append("slices is null.\n");
         }
         if (defaultSchedule != null && !defaultSchedule.isCorrect(this)) {
-            logger.info("defaultSchedule is not null but incorrect");
-            return false;
+            sb.append("defaultSchedule is not null but incorrect\n");
         }
         if (flexOfferSchedule != null && !flexOfferSchedule.isCorrect(this)) {
-            logger.info("flexOfferSchedule is not null but incorrect");
-            return false;
+            sb.append("flexOfferSchedule is not null but incorrect\n");
         }
         if (startAfterInterval > startBeforeInterval) {
-            logger.info("startAfterInterval is after startBeforeInterval");
-            return false;
+            sb.append("startAfterInterval is after startBeforeInterval\n");
         }
         
         if (acceptanceBeforeInterval > this.getEndAfterInterval()) {
-            logger.info("acceptanceBeforeInterval is after endBeforeInterval");
-            return false;
+            sb.append("acceptanceBeforeInterval is after endBeforeInterval\n");
         }
         if (assignmentBeforeInterval > this.getEndAfterInterval()) {
-            logger.info("assignmentBeforeInterval is after endBeforeInterval");
-            return false;
+            sb.append("assignmentBeforeInterval is after endBeforeInterval\n");
         }
        /* if (assignmentBeforeDurationIntervals < startBeforeInterval) {
             logger.info("assignmentBeforeDurationIntervals is after startBeforeInterval");
@@ -548,11 +541,28 @@ public class FlexOffer implements Serializable, Cloneable {
 //        for (FlexOfferSlice s : slices) {
 //            check totalEnergyConstraint
 //        }
+        return sb.toString();
+    }
+
+	/**
+	 * @TODO Need to implement. Check constraints, etc.
+	 * @return
+	 */
+    public boolean isCorrect() {
+        String error = isCorrectWithOutput();
+        if (!"".equals(error)) {
+            logger.info("{}", error);
+            return false;
+        }
+
+//        for (FlexOfferSlice s : slices) {
+//            check totalEnergyConstraint
+//        }
         return true;
     }
 
 	public boolean isProduction() {
-		boolean isProd = false;		
+		boolean isProd = false;
 		
 		for(FlexOfferSlice slice : this.slices)
 			isProd |= slice.isProduction();
