@@ -59,7 +59,7 @@ public class XMarketSubscriberClient implements MarketSubscriberIf {
 			throw new MarketException("Not connected.");
 		
 		HttpOverXmppReq request = new HttpOverXmppReq(HttpMethod.POST,
-				"/market/acceptBid");
+				"/market/acceptBidV2");
 
 		try {
 			request.setData(HOXTUtil.getDataFromObject(Bid.class, bid));
@@ -70,7 +70,7 @@ public class XMarketSubscriberClient implements MarketSubscriberIf {
 		}
 
 		try {
-			this.hoxtManager.sendRequest(request, bid.getOwner() + "@delling/demo");
+			this.hoxtManager.sendRequest(request, hoxtManager.makeID(bid.getOwner()));
 		} catch (NotConnectedException | HOXTException
 				| XmppStringprepException e) {
 			throw new MarketException(e.getMessage());

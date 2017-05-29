@@ -349,6 +349,10 @@ public class HOXTWrapper {
 
     }
 
+    public String makeID(String id) {
+        return id + "@" + conConfig.getServiceName() + "/" + conConfig.getResource();
+    }
+
     /**
      * Sub-class to handle incoming packet corresponding to HTTP requests or
      * responses

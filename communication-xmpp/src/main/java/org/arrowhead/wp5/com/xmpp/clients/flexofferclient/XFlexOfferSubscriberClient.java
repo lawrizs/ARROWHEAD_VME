@@ -83,14 +83,14 @@ public class XFlexOfferSubscriberClient implements FlexOfferSubscriberIf {
         // send request of a flex-offer to the aggregator and handle the
         // response
         try {
-            resp = this.hoxtWrapper.sendRequest(request, aggregatorId
-                    + "@delling/demo");
+			resp = this.hoxtWrapper.sendRequest(request, hoxtWrapper.makeID(aggregatorId));
         } catch (NotConnectedException | HOXTException | XmppStringprepException e) {
             logger.error("Error sending request to create FlexOffer", e);
             return -1;
         }
 
         if (resp != null && resp.getStatusCode() == 400) {
+            logger.debug("Status message: {}", resp.getStatusMessage());
             throw new FlexOfferException(resp.getStatusMessage());
         }
 

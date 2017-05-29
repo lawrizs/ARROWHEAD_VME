@@ -91,8 +91,7 @@ public class XFlexOfferProviderClient implements FlexOfferProviderIf {
 			req.setData(HOXTUtil.getDataFromObject(FlexOfferStateWrapper.class,
 					new FlexOfferStateWrapper(flexOfferState)));
 			HOXTWrapper.addRequired(req, true);
-			resp = this.hoxtWrapper.sendRequest(req, subscriberId
-					+ "@delling/demo");
+			resp = this.hoxtWrapper.sendRequest(req, hoxtWrapper.makeID(subscriberId));
 			if (resp.getStatusCode() != 200) {
 				/** Should not go there! */
 				/** TODO better error handling */
@@ -126,8 +125,7 @@ public class XFlexOfferProviderClient implements FlexOfferProviderIf {
 		try {
 			request.setData(HOXTUtil.getDataFromObject(FlexOfferSchedule.class, flexOfferSchedule));
 			HOXTWrapper.addRequired(request, false);
-			resp = this.hoxtWrapper.sendRequest(request, subscriberId
-					+ "@delling/demo");
+			resp = this.hoxtWrapper.sendRequest(request, hoxtWrapper.makeID(subscriberId));
 			if (!(resp.getStatusCode() == 201 || resp.getStatusCode() == 200)) {
 				/** Should not go there! */
 				/** TODO better error handling */

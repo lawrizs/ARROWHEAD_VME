@@ -36,4 +36,8 @@ public class HOXTException extends Exception {
 	public HOXTException(String message){
 		super(message);
 	}
+
+    public HOXTException(Throwable inner){
+        super(inner);
+    }
 }

@@ -67,8 +67,7 @@ public class XMarketProviderClient implements MarketProviderIf {
 		HttpOverXmppResp resp;
 		MarketInfo result = null;
 		try {
-			resp = this.hoxtWrapper.sendRequest(request, marketId
-					+ "@delling/demo");
+			resp = this.hoxtWrapper.sendRequest(request, hoxtWrapper.makeID(marketId));
 			Xml xml = (Xml) resp.getData().getChild();
 			result = HOXTUtil.getEntity(xml.getText(), MarketInfo.class);
 		} catch (JAXBException | NotConnectedException | HOXTException
@@ -111,7 +110,7 @@ public class XMarketProviderClient implements MarketProviderIf {
 		}
 
 		try {
-			this.hoxtWrapper.sendRequest(request, marketId + "@delling/demo");
+			this.hoxtWrapper.sendRequest(request, hoxtWrapper.makeID(marketId));
 		} catch (NotConnectedException | HOXTException
 				| XmppStringprepException e) {
 			throw new MarketException(e.getMessage());
